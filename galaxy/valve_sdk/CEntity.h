@@ -431,10 +431,22 @@ public:
         return GetValue<int>(m_iClip1);
     }
 
+	int m_iPrimaryReserveAmmoCount( )
+	{
+		static int primary_reserve = g_pNetvars->GetOffset( "DT_BaseCombatWeapon", "m_iPrimaryReserveAmmoCount" );
+		return GetValue<int>( primary_reserve );
+	}
+
     WeaponInfo_t* GetCSWpnData()
     {
         return Utils::CallVFunc<460, WeaponInfo_t*>(this);
     }
+
+	weapon_info_t* GetCSWpnData_2( )
+	{
+		if (!this) return nullptr;
+		return Utils::CallVFunc<460, weapon_info_t*>( this );
+	}
 
     std::string GetName()
     {

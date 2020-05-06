@@ -7,8 +7,8 @@ void __fastcall c_hooks::LockCursor( ISurface* thisptr, void* edx )
 
 	if (!menu.menuOpened)
 	{
-		g_pSurface->UnLockCursor( ); 
+		return oLockCursor( thisptr, edx );
 	}
 		
-	return oLockCursor( thisptr, edx );
+	g_pSurface->UnLockCursor( ); 
 }

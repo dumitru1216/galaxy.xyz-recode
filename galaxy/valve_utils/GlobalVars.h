@@ -19,8 +19,8 @@ namespace g
 	extern bool           Hit[65];
 	extern int            MissedShots[65];
 
-
-
+	//fonts
+	extern DWORD weapon_font;
 	extern DWORD CourierNew;
 	extern DWORD Tahoma;
 }

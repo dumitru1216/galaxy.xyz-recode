@@ -9,50 +9,71 @@
 #include "..\..\valve_utils\Math.h"
 #include "..\..\gui\menu_system.h"
 
-ESP g_ESP;
+c_esp esp;
 
-void ESP::RenderBox()
+void c_esp::RenderBox()
 {
-	g_pSurface->OutlinedRect(Box.left, Box.top, Box.right, Box.bottom, color);
-	g_pSurface->OutlinedRect(Box.left + 1, Box.top + 1, Box.right - 2, Box.bottom - 2, Color(0, 0, 0, 240));
-	g_pSurface->OutlinedRect(Box.left - 1, Box.top - 1, Box.right + 2, Box.bottom + 2, Color(0, 0, 0, 240));
+	g_pSurface->OutlinedRect( Box.left, Box.top, Box.right, Box.bottom, Color(255, 255, 255, 255)); //main part
+	g_pSurface->OutlinedRect( Box.left + 1, Box.top + 1, Box.right - 2, Box.bottom - 2, Color(0, 0, 0, 240)); //outlkine
+	g_pSurface->OutlinedRect( Box.left - 1, Box.top - 1, Box.right + 2, Box.bottom + 2, Color(0, 0, 0, 240)); //outline
 }
 
-void ESP::RenderName(C_BaseEntity* pEnt, int iterator)
+void c_esp::RenderName(C_BaseEntity* pEnt, int iterator)
 {
     PlayerInfo_t pInfo;
     g_pEngine->GetPlayerInfo(iterator, &pInfo);
 
-	if (galaxy_vars.cfg.Name == 1)
-		g_pSurface->DrawT(Box.left + (Box.right / 2), Box.top - 16, textcolor, font, true, pInfo.szName);
-	else if (galaxy_vars.cfg.Name == 2)
-	{
-		g_pSurface->DrawT(Box.left + Box.right + 5, Box.top, textcolor, font, false, pInfo.szName);
-		offsetY += 1;
-	}
+	if (galaxy_vars.cfg.name)
+		g_pSurface->DrawT(Box.left + (Box.right / 2), Box.top - 9, Color(255, 255, 255, 240), font, true, pInfo.szName);
+	
 }
 
-void ESP::RenderWeaponName(C_BaseEntity* pEnt)
+std::string clean_name( std::string name ) {
+	std::string wep = name;
+	if (wep[0] == 'W') wep.erase( wep.begin( ) );
+
+	auto end_of_weapon = wep.find( "EAPON_" );
+	if (end_of_weapon != std::string::npos)
+		wep.erase( wep.begin( ) + end_of_weapon, wep.begin( ) + end_of_weapon + 6 );
+
+	return wep;
+}
+
+void c_esp::RenderWeaponName(C_BaseEntity* pEnt)
 {
     auto weapon = pEnt->GetActiveWeapon();
+    if (!weapon) return;
+     
+	std::string wep_str = weapon->GetName( );
 
-    if (!weapon)
-        return;
+	std::transform( wep_str.begin( ), wep_str.end( ), wep_str.begin( ), ::toupper );
 
-    auto strWeaponName = weapon->GetName();
+	char ammo[519];
+	sprintf_s( ammo, " - [ %d  /  %d ]", weapon->GetAmmo( ), weapon->m_iPrimaryReserveAmmoCount( ) );
+
+	std::string strWeaponName = std::string( weapon->GetCSWpnData( )->weapon_name ); //weapon->GetName();
 
     strWeaponName.erase(0, 7);
 
-	if (galaxy_vars.cfg.Weapon == 1)
-		g_pSurface->DrawT(Box.left + (Box.right / 2), Box.top + Box.bottom, textcolor, font, true, strWeaponName.c_str());
-	else if (galaxy_vars.cfg.Weapon == 2)
-	{
-		g_pSurface->DrawT(Box.left + Box.right + 5, Box.top + (offsetY * 11), textcolor, font, false, strWeaponName.c_str());
-		offsetY += 1;
-	}
+	if (galaxy_vars.cfg.weapon_name)
+		g_pSurface->DrawT( Box.left + (Box.right / 2), Box.top + Box.bottom + 7, Color( 255, 255, 255, 240 ), font, true, (clean_name( wep_str ) + (galaxy_vars.cfg.weapon_name ? ammo : "")).c_str( ) );
 }
 
-void ESP::RenderHealth(C_BaseEntity* pEnt)
+void c_esp::RenderAmmo( C_BaseEntity* pEnt )
+{
+	if (!pEnt->GetActiveWeapon( )->GetCSWpnData_2( )) return;
+	int
+		max_in_clip = pEnt->GetActiveWeapon( )->GetCSWpnData_2( )->iMaxClip1,
+		ammo_in_clip = pEnt->GetActiveWeapon( )->GetAmmo( ),
+		scaled_ammo = ammo_in_clip * Box.right / max_in_clip,
+		shit = std::clamp( scaled_ammo, 0, Box.right );
+
+	g_pSurface->FilledRect( Box.left + 2, Box.top + Box.bottom + 3, Box.right - 5, 2, Color( 20, 20, 20, 240 ) );
+	g_pSurface->OutlinedRect( Box.left + 1, Box.top + Box.bottom + 2, Box.right - 3, 4, Color( 35, 35, 35, 240 ) );
+	g_pSurface->FilledRect( Box.left + 2, Box.top + Box.bottom + 3, shit - 5, 2, Color( 0, 191, 191, 240 ) );
+}
+
+void c_esp::RenderHealth(C_BaseEntity* pEnt)
 {
 	if (galaxy_vars.cfg.HealthBar)
 	{
@@ -69,7 +90,7 @@ void ESP::RenderHealth(C_BaseEntity* pEnt)
 	}
 }
 
-void ESP::RenderHitboxPoints(C_BaseEntity* pEnt)
+void c_esp::RenderHitboxPoints(C_BaseEntity* pEnt)
 {
 	for (int hitbox = 0; hitbox < 28; hitbox++)
 	{
@@ -79,7 +100,7 @@ void ESP::RenderHitboxPoints(C_BaseEntity* pEnt)
 	}
 }
 
-void ESP::RenderSkeleton(C_BaseEntity* pEnt) // the best
+void c_esp::RenderSkeleton(C_BaseEntity* pEnt) // the best
 {
 	if (g_LagComp.PlayerRecord[pEnt->EntIndex()].size() == 0)
 		return;
@@ -143,7 +164,7 @@ void ESP::RenderSkeleton(C_BaseEntity* pEnt) // the best
 	}
 }
 
-void ESP::BoundBox(C_BaseEntity* pEnt)
+void c_esp::BoundBox(C_BaseEntity* pEnt)
 {
 	Box.bottom = 0;
 	Box.top = 0;
@@ -164,14 +185,11 @@ void ESP::BoundBox(C_BaseEntity* pEnt)
 	Box.right = Width * 2;
 }
 
-void ESP::Render()
+void c_esp::Render()
 {
-    if (!g::pLocalEntity || !g_pEngine->IsInGame() || !galaxy_vars.cfg.Esp)
-        return;
+    if (!g::pLocalEntity || !g_pEngine->IsInGame() || !galaxy_vars.cfg.Esp)  return;
+       
 
-//	color = Color(galaxy_vars.cfg.BoxColor.red, galaxy_vars.cfg.BoxColor.green, galaxy_vars.cfg.BoxColor.blue, 240);
-	//textcolor = Color(galaxy_vars.cfg.FontColor.red, galaxy_vars.cfg.FontColor.green, galaxy_vars.cfg.FontColor.blue, 240);
-	//skelecolor = Color(galaxy_vars.cfg.SkeletonColor.red, galaxy_vars.cfg.SkeletonColor.green, galaxy_vars.cfg.SkeletonColor.blue, 240);
 
 	(galaxy_vars.cfg.Font == 0) ? font = g::CourierNew : font = g::Tahoma;
 
@@ -202,69 +220,16 @@ void ESP::Render()
 		if (galaxy_vars.cfg.HitboxPoints)
 			RenderHitboxPoints(pPlayerEntity);
 
-        if (galaxy_vars.cfg.Name > 0)
+        if (galaxy_vars.cfg.name)
             RenderName(pPlayerEntity, i);
 
-        if (galaxy_vars.cfg.Weapon)
+        if (galaxy_vars.cfg.weapon_name)
             RenderWeaponName(pPlayerEntity);
+
+		if (galaxy_vars.cfg.ammo_bar)
+			RenderAmmo( pPlayerEntity );
 
 		if (galaxy_vars.cfg.HealthBar || galaxy_vars.cfg.HealthVal > 0)
 			RenderHealth(pPlayerEntity);
     }
-/* i was working on exptrapolation 4ever ago i did in here because i just wanted to see it visualy
-	if (g::pLocalEntity->IsAlive())
-	{
-		float angDelta;
-		float angExtrap;
-		Vector originExtrap;
-		Vector2D angCalc, w2sBottom, w2sTop;
-
-		static float oldSimtime;
-		static float storedSimtime;
-
-		static std::deque<TestPos> oldPos;
-
-		if (storedSimtime != g::pLocalEntity->GetSimulationTime())
-		{
-			oldPos.push_back(TestPos{ g::pLocalEntity->GetOrigin(), g::pLocalEntity->GetSimulationTime() });
-			oldSimtime = storedSimtime;
-			storedSimtime = g::pLocalEntity->GetSimulationTime();
-		}
-
-		float simDelta = storedSimtime - oldSimtime;
-
-		originExtrap = g::pLocalEntity->GetOrigin();
-
-		Utils::WorldToScreen(g::pLocalEntity->GetOrigin() + (g::pLocalEntity->GetVelocity() * simDelta), w2sTop);
-		g_pSurface->FilledRect(w2sTop.x - 3, w2sTop.y - 3, 6, 6, Color(255, 0, 0, 255));
-
-		if (oldPos.size() > 3)
-			oldPos.erase(oldPos.begin());
-
-		if (oldPos.size() == 3)
-		{
-			angDelta = g_Math.CalcAngle(oldPos.at(1).Pos, oldPos.at(2).Pos).y - g_Math.CalcAngle(oldPos.at(0).Pos, oldPos.at(1).Pos).y;
-			angExtrap = g_Math.CalcAngle(Vector(0,0,0), g::pLocalEntity->GetVelocity()).y + angDelta;
-			angExtrap += 90;
-
-			float tempExtrap = (g::pLocalEntity->GetVelocity().Length2D() * simDelta);
-
-			angCalc = { (tempExtrap * sin(g_Math.GRD_TO_BOG(angExtrap))), (tempExtrap * cos(g_Math.GRD_TO_BOG(angExtrap))) };
-
-			originExtrap = { originExtrap.x + angCalc.x, originExtrap.y - angCalc.y, g::pLocalEntity->GetVelocity().z * simDelta };			
-		}
-
-		if ((g::pLocalEntity->GetFlags() & FL_ONGROUND))
-		{
-			originExtrap.z = g::pLocalEntity->GetOrigin().x;
-		}
-		else
-		{
-
-		}
-
-		Utils::WorldToScreen(originExtrap, w2sBottom);
-		g_pSurface->FilledRect(w2sBottom.x - 3, w2sBottom.y - 3, 6, 6, Color(0, 255, 0, 255));
-	}
-	*/
 }

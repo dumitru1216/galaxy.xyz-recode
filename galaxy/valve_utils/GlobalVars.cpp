@@ -19,7 +19,8 @@ namespace g
 	int            MissedShots[65];
 
 
-
+	//fonts
+	DWORD weapon_font;
 	DWORD CourierNew;
 	DWORD Tahoma;
 }

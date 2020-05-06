@@ -24,10 +24,12 @@ void hooking::init_fonts( )
 	//create font
 	g::CourierNew = g_pSurface->FontCreate( );
 	g::Tahoma = g_pSurface->FontCreate( );
+	g::weapon_font = g_pSurface->FontCreate( );
 
 	//render font
-	g_pSurface->SetFontGlyphSet( g::CourierNew, "Courier New", 14, 300, 0, 0, FONTFLAG_OUTLINE );
+	g_pSurface->SetFontGlyphSet( g::CourierNew, "hooge 05_55 Cyr2", 10, 300, 0, 0, FONTFLAG_OUTLINE );
 	g_pSurface->SetFontGlyphSet( g::Tahoma, "Tahoma", 12, 700, 0, 0, FONTFLAG_DROPSHADOW );
-
+	g_pSurface->SetFontGlyphSet( g::weapon_font, "hooge 05_55 Cyr2", 10, 300, 0, 0, FONTFLAG_OUTLINE );
+		
 }
 

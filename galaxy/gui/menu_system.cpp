@@ -138,6 +138,10 @@ void visuals_tab( ) {
 	{
 	
 		ImGui::Checkbox( "enable visuals", &galaxy_vars.cfg.Esp );
+		ImGui::Checkbox( "bounding box", &galaxy_vars.cfg.Box );
+		ImGui::Checkbox( "name", &galaxy_vars.cfg.name );
+		ImGui::Checkbox( "weapon", &galaxy_vars.cfg.weapon_name );
+		ImGui::Checkbox( "ammo bar", &galaxy_vars.cfg.ammo_bar );
 
 
 	}

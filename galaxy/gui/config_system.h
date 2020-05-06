@@ -48,9 +48,10 @@ public:
 		bool Esp;
 		int Font;
 		
-		int Name;
+		bool name;
 		int HealthVal;
-		int Weapon;
+		bool weapon_name;
+		bool ammo_bar;
 		bool Box;
 		
 		bool HealthBar;
