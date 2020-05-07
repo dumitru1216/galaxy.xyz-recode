@@ -139,9 +139,17 @@ void visuals_tab( ) {
 	
 		ImGui::Checkbox( "enable visuals", &galaxy_vars.cfg.Esp );
 		ImGui::Checkbox( "bounding box", &galaxy_vars.cfg.Box );
+		ImGui::SameLine( );
+		ImGui::ColorEdit4( "###box_color", galaxy_vars.cfg.box_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
 		ImGui::Checkbox( "name", &galaxy_vars.cfg.name );
+		ImGui::SameLine( );
+		ImGui::ColorEdit4( "###name_color", galaxy_vars.cfg.name_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+		ImGui::Checkbox( "health bar", &galaxy_vars.cfg.HealthBar );
 		ImGui::Checkbox( "weapon", &galaxy_vars.cfg.weapon_name );
 		ImGui::Checkbox( "ammo bar", &galaxy_vars.cfg.ammo_bar );
+		ImGui::SameLine( );
+		ImGui::ColorEdit4( "###ammo_color", galaxy_vars.cfg.ammo_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+
 
 
 	}
@@ -152,8 +160,57 @@ void visuals_tab( ) {
 	ImGui::Dummy( ImVec2( 0, 0 ) ); ImGui::SameLine( );
 	ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, ImVec2( 16, 16 ) );
 
-	ImGui::BeginChild( "Colored models", ImVec2( 269, 152 ), true );
+	ImGui::BeginChild( "visuals [ chams ]", ImVec2( 269, 152 ), true );
 	{
+		static int chams_sub = 0;
+		if (ImGui::Button( "enemy", ImVec2( 50, 15 ) ) )
+		{
+			chams_sub = 0;
+		}
+		ImGui::SameLine( );
+		if (ImGui::Button( "local", ImVec2( 50, 15 ) ))
+		{
+			chams_sub = 1;
+		}
+		ImGui::SameLine( );
+		if (ImGui::Button( "other", ImVec2( 50, 15 ) ))
+		{
+			chams_sub = 2;
+		}
+		ImGui::SameLine( );
+		if (ImGui::Button( "glow", ImVec2( 50, 15 ) ))
+		{
+			chams_sub = 3;
+		}
+
+		const char* chams_material[] = { "textured", "eso" };
+
+		if (chams_sub == 0)
+		{
+			ImGui::Checkbox( "enemy chams", &galaxy_vars.cfg.chams_enemy );
+			ImGui::SameLine( );
+			ImGui::ColorEdit4( "###normal_chamsenem", galaxy_vars.cfg.enemy_visible_colors, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+			ImGui::Combo( "enemy materials [ normal ]", &galaxy_vars.cfg.normal_enemy_material, chams_material, IM_ARRAYSIZE( chams_material ) );
+
+		}
+
+		if (chams_sub == 1)
+		{
+
+		}
+
+		if (chams_sub == 2)
+		{
+
+		}
+
+		if (chams_sub == 3)
+		{
+
+		}
+
+
+
 	}
 	ImGui::EndChild( true );
 

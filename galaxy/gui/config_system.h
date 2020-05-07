@@ -57,7 +57,6 @@ public:
 		bool HealthBar;
 		bool Skeleton[2] = { false,false };
 		
-		bool HitboxPoints;
 		bool Chams;
 		
 		bool NoZoom;
@@ -72,6 +71,17 @@ public:
 		bool Ak47meme;
 		int	Test;
 
+		// - [ chams ] -
+		bool chams_enemy;
+		int normal_enemy_material;
+		float enemy_visible_colors[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+
+		// - [ colors ] -
+
+		float box_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float name_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float ammo_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		float menu_color[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 	} 

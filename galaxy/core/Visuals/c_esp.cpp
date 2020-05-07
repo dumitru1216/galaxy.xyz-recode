@@ -13,7 +13,7 @@ c_esp esp;
 
 void c_esp::RenderBox()
 {
-	g_pSurface->OutlinedRect( Box.left, Box.top, Box.right, Box.bottom, Color(255, 255, 255, 255)); //main part
+	g_pSurface->OutlinedRect( Box.left, Box.top, Box.right, Box.bottom, Color(galaxy_vars.cfg.box_color[0] * 255, galaxy_vars.cfg.box_color[1] * 255, galaxy_vars.cfg.box_color[2] * 255, 240 )); //main part
 	g_pSurface->OutlinedRect( Box.left + 1, Box.top + 1, Box.right - 2, Box.bottom - 2, Color(0, 0, 0, 240)); //outlkine
 	g_pSurface->OutlinedRect( Box.left - 1, Box.top - 1, Box.right + 2, Box.bottom + 2, Color(0, 0, 0, 240)); //outline
 }
@@ -23,8 +23,10 @@ void c_esp::RenderName(C_BaseEntity* pEnt, int iterator)
     PlayerInfo_t pInfo;
     g_pEngine->GetPlayerInfo(iterator, &pInfo);
 
+	auto name_color = galaxy_vars.cfg.name_color;
+
 	if (galaxy_vars.cfg.name)
-		g_pSurface->DrawT(Box.left + (Box.right / 2), Box.top - 9, Color(255, 255, 255, 240), font, true, pInfo.szName);
+		g_pSurface->DrawT(Box.left + (Box.right / 2), Box.top - 9, Color(name_color[0] * 255, name_color[1] * 255, name_color[2] * 255, 240), font, true, pInfo.szName);
 	
 }
 
@@ -68,35 +70,29 @@ void c_esp::RenderAmmo( C_BaseEntity* pEnt )
 		scaled_ammo = ammo_in_clip * Box.right / max_in_clip,
 		shit = std::clamp( scaled_ammo, 0, Box.right );
 
+	auto ammo_color = galaxy_vars.cfg.ammo_color;
+
 	g_pSurface->FilledRect( Box.left + 2, Box.top + Box.bottom + 3, Box.right - 5, 2, Color( 20, 20, 20, 240 ) );
 	g_pSurface->OutlinedRect( Box.left + 1, Box.top + Box.bottom + 2, Box.right - 3, 4, Color( 35, 35, 35, 240 ) );
-	g_pSurface->FilledRect( Box.left + 2, Box.top + Box.bottom + 3, shit - 5, 2, Color( 0, 191, 191, 240 ) );
+	g_pSurface->FilledRect( Box.left + 2, Box.top + Box.bottom + 3, shit - 5, 2, Color( ammo_color[0] * 255, ammo_color[1] * 255, ammo_color[2] * 255, 240 ) );
 }
-
-void c_esp::RenderHealth(C_BaseEntity* pEnt)
+ //+ Box.right
+void c_esp::RenderHealth( C_BaseEntity* pEnt )
 {
 	if (galaxy_vars.cfg.HealthBar)
 	{
-		g_pSurface->FilledRect(Box.left - 6, Box.top - 1, 4, Box.bottom + 2, Color(0, 0, 0, 240));
-		int pixelValue = pEnt->GetHealth() * Box.bottom / 100;
-		g_pSurface->FilledRect(Box.left - 5, Box.top + Box.bottom - pixelValue, 2, pixelValue, Color(0, 255, 0, 250));
-	}
-
-	if (galaxy_vars.cfg.HealthVal == 1)
-	{
-		std::string Health = "HP " + std::to_string(pEnt->GetHealth());
-		g_pSurface->DrawT(Box.left + Box.right + 5, Box.top + (offsetY * 11), textcolor, font, false, Health.c_str());
+		//hp number
+		std::string Health = "" + std::to_string( pEnt->GetHealth( ) );
+		g_pSurface->DrawT( Box.left - 20, Box.top + (offsetY * 5), Color( 255, 255, 255, 255 ), font, false, Health.c_str( ) );
 		offsetY += 1;
-	}
-}
 
-void c_esp::RenderHitboxPoints(C_BaseEntity* pEnt)
-{
-	for (int hitbox = 0; hitbox < 28; hitbox++)
-	{
-		Vector2D w2sHitbox;
-		Utils::WorldToScreen(g::AimbotHitbox[pEnt->EntIndex()][hitbox], w2sHitbox);
-		g_pSurface->FilledRect(w2sHitbox.x - 2, w2sHitbox.y - 2, 4, 4, color);
+
+
+		g_pSurface->FilledRect( Box.left - 6, Box.top - 1, 4, Box.bottom + 2, Color( 0, 0, 0, 240 ) );
+		int pixelValue = pEnt->GetHealth( ) * Box.bottom / 100;
+		g_pSurface->FilledRect( Box.left - 5, Box.top + Box.bottom - pixelValue, 2, pixelValue, Color( 0, 255, 0, 250 ) );
+
+
 	}
 }
 
@@ -189,8 +185,6 @@ void c_esp::Render()
 {
     if (!g::pLocalEntity || !g_pEngine->IsInGame() || !galaxy_vars.cfg.Esp)  return;
        
-
-
 	(galaxy_vars.cfg.Font == 0) ? font = g::CourierNew : font = g::Tahoma;
 
 	for (int i = 1; i < g_pEngine->GetMaxClients(); ++i)
@@ -217,9 +211,6 @@ void c_esp::Render()
         if (galaxy_vars.cfg.Box)
             RenderBox();
 
-		if (galaxy_vars.cfg.HitboxPoints)
-			RenderHitboxPoints(pPlayerEntity);
-
         if (galaxy_vars.cfg.name)
             RenderName(pPlayerEntity, i);
 
@@ -229,7 +220,7 @@ void c_esp::Render()
 		if (galaxy_vars.cfg.ammo_bar)
 			RenderAmmo( pPlayerEntity );
 
-		if (galaxy_vars.cfg.HealthBar || galaxy_vars.cfg.HealthVal > 0)
+		if (galaxy_vars.cfg.HealthBar)
 			RenderHealth(pPlayerEntity);
     }
 }

@@ -112,21 +112,28 @@ namespace interfaces
 		g_pRenderView   = FindClass<IVRenderView>("engine.dll", "VEngineRenderView");
 
 		//thanks monarch (from yeti)
-		std::ofstream("csgo\\materials\\FlatChams.vmt") << R"#("UnlitGeneric"
-{
-  "$basetexture" "vgui/white_additive"
-  "$no_fullbright" "0"
-  "$ignorez"      "1"
-  "$envmap"       "env_cubemap"
-  "$nofog"        "1"
-  "$model"        "1"
-  "$nocull"       "0"
-  "$selfillum"    "1"
-  "$halflambert"  "1"
-  "$znearer"      "0"
-  "$flat"         "1"
-}
-)#";
+		
+		std::ofstream( "csgo/materials/glowOverlay.vmt" ) << R"#("VertexLitGeneric" {
+				"$additive" "1"
+				"$envmap" "models/effects/cube_white"
+				"$envmaptint" "[0.2 0.2 0.7]"
+				"$envmapfresnel" "1"
+				"$envmapfresnelminmaxexp" "[0 1 2]"
+				"$alpha" "0.8"
+			})#";
+
+		std::ofstream( "csgo\\materials\\textured_virt.vmt" ) << R"("VertexLitGeneric"
+				{
+					"$basetexture"	"vgui/white"
+					"$model"		"1"
+					"$flat"			"0"
+					"$nocull"		"1"
+					"$halflambert"	"1"
+					"$nofog"		"1"
+					"$ignorez"		"0"
+					"$znearer"		"0"
+					"$wireframe"	"0"
+				})";
 
     }
 }

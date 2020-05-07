@@ -34,6 +34,36 @@ class Vector;
 // Indicates we're using bone indices
 #define	VERTEX_BONE_INDEX				0x0080
 
+#define TEXTURE_GROUP_LIGHTMAP						"Lightmaps"
+#define TEXTURE_GROUP_WORLD							"World textures"
+#define TEXTURE_GROUP_MODEL							"Model textures"
+#define TEXTURE_GROUP_VGUI							"VGUI textures"
+#define TEXTURE_GROUP_PARTICLE						"Particle textures"
+#define TEXTURE_GROUP_DECAL							"Decal textures"
+#define TEXTURE_GROUP_SKYBOX						"SkyBox textures"
+#define TEXTURE_GROUP_CLIENT_EFFECTS				"ClientEffect textures"
+#define TEXTURE_GROUP_OTHER							"Other textures"
+#define TEXTURE_GROUP_PRECACHED						"Precached"				// TODO: assign texture groups to the precached materials
+#define TEXTURE_GROUP_CUBE_MAP						"CubeMap textures"
+#define TEXTURE_GROUP_RENDER_TARGET					"RenderTargets"
+#define TEXTURE_GROUP_UNACCOUNTED					"Unaccounted textures"	// Textures that weren't assigned a texture group.
+	//#define TEXTURE_GROUP_STATIC_VERTEX_BUFFER		"Static Vertex"
+#define TEXTURE_GROUP_STATIC_INDEX_BUFFER			"Static Indices"
+#define TEXTURE_GROUP_STATIC_VERTEX_BUFFER_DISP		"Displacement Verts"
+#define TEXTURE_GROUP_STATIC_VERTEX_BUFFER_COLOR	"Lighting Verts"
+#define TEXTURE_GROUP_STATIC_VERTEX_BUFFER_WORLD	"World Verts"
+#define TEXTURE_GROUP_STATIC_VERTEX_BUFFER_MODELS	"Model Verts"
+#define TEXTURE_GROUP_STATIC_VERTEX_BUFFER_OTHER	"Other Verts"
+#define TEXTURE_GROUP_DYNAMIC_INDEX_BUFFER			"Dynamic Indices"
+#define TEXTURE_GROUP_DYNAMIC_VERTEX_BUFFER			"Dynamic Verts"
+#define TEXTURE_GROUP_DEPTH_BUFFER					"DepthBuffer"
+#define TEXTURE_GROUP_VIEW_MODEL					"ViewModel"
+#define TEXTURE_GROUP_PIXEL_SHADERS					"Pixel Shaders"
+#define TEXTURE_GROUP_VERTEX_SHADERS				"Vertex Shaders"
+#define TEXTURE_GROUP_RENDER_TARGET_SURFACE			"RenderTarget Surfaces"
+#define TEXTURE_GROUP_MORPH_TARGETS					"Morph Targets"
+
+
 // Indicates this is a vertex shader
 #define	VERTEX_FORMAT_VERTEX_SHADER		0x0100
 
@@ -115,6 +145,31 @@ inline bool UsesVertexShader(VertexFormat_t vertexFormat)
 #define COMPRESSED_NORMALS_COMBINEDTANGENTS_UBYTE4	1
 //#define COMPRESSED_NORMALS_TYPE						COMPRESSED_NORMALS_SEPARATETANGENTS_SHORT2
 #define COMPRESSED_NORMALS_TYPE						COMPRESSED_NORMALS_COMBINEDTANGENTS_UBYTE4
+
+#define member_func_args(...) (this, __VA_ARGS__ ); }
+#define vfunc(index, func, sig) auto func { return reinterpret_cast<sig>((*(uint32_t**)this)[index]) member_func_args
+
+class IMaterialVar {
+private:
+	vfunc( 10, set_vector_internal( const float x, const float y ), void( __thiscall* )(void*, float, float) )(x, y)
+		vfunc( 11, set_vector_internal( const float x, const float y, const float z ), void( __thiscall* )(void*, float, float, float) )(x, y, z)
+
+public:
+	vfunc( 4, set_float( const float val ), void( __thiscall* )(void*, float) )(val)
+		vfunc( 5, set_int( const int val ), void( __thiscall* )(void*, int) )(val)
+		vfunc( 6, set_string( char const* val ), void( __thiscall* )(void*, char const*) )(val)
+		vfunc( 26, set_vector_component( const float val, const int comp ), void( __thiscall* )(void*, float, int) )(val, comp)
+
+		void set_vector( const Vector2D vector )
+	{
+		set_vector_internal( vector.x, vector.y );
+	}
+
+	void set_vector( const Vector vector )
+	{
+		set_vector_internal( vector.x, vector.y, vector.z );
+	}
+};
 
 
 //-----------------------------------------------------------------------------
@@ -391,6 +446,20 @@ public:
 	virtual void			ColorModulate(float r, float g, float b) = 0;
 
 	// Material Var flags...
+
+	vfunc( 11, find_var_internal( const char* name, bool* found ), IMaterialVar*(__thiscall*)(IMaterial*, const char*, bool*, bool) )(name, found, false)
+
+	IMaterialVar* find_var( const char* name )
+	{
+		bool found;
+		const auto ret = find_var_internal( name, &found );
+
+		if (found)
+			return ret;
+
+		return nullptr;
+	}
+
 	virtual void			SetMaterialVarFlag(MaterialVarFlags_t flag, bool on) = 0;
 	virtual bool			GetMaterialVarFlag(MaterialVarFlags_t flag) const = 0;
 
