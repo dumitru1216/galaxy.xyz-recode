@@ -68,13 +68,39 @@ public:
 		bool Bhop;
 		bool AutoStrafe;
 		bool LegitBacktrack;
-		bool Ak47meme;
-		int	Test;
+
+		// - [ esp ] -
+		int NightModeSlider;
+		bool NightMode;
+		float sky_box_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
 
 		// - [ chams ] -
+
+		// - enemy -
 		bool chams_enemy;
+		bool enemy_invisible;
+		bool enemy_overide_chams;
+		int overide_enemy_material;
 		int normal_enemy_material;
 		float enemy_visible_colors[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float enemy_overide_colors[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+		// - local - 
+		bool local_chams;
+		bool local_chams_overide;
+		int local_materials;
+		int local_overide_materials;
+		float local_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float local_overide_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+		// - hands - 
+		bool hand_chams;
+		bool hand_chams_overide;
+		int hand_materials;
+		int hand_materials_overide;
+		float hand_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float hand_overide_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 
 		// - [ colors ] -

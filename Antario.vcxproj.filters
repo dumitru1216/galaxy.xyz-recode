@@ -114,6 +114,9 @@
     <ClCompile Include="galaxy\gui\imgui\imgui_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="galaxy\core\Visuals\other_esp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="galaxy\hooking_mode\hooking_init.h">
@@ -309,6 +312,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="galaxy\gui\imgui\stb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\core\Visuals\other_esp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

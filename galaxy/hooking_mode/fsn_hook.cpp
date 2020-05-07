@@ -9,5 +9,10 @@ void __stdcall c_hooks::FrameStageNotify( ClientFrameStage_t curStage )
 	g_Misc.ThirdPerson( curStage );
 	g_Resolver.FrameStage( curStage );
 
+	//proper hooking nightmode
+	if (g_pEngine->IsInGame( ) || g_pEngine->IsConnected( ) && g::pLocalEntity)
+		c_other_esp.night_mode( );
+
+
 	oFrameStage( curStage );
 }

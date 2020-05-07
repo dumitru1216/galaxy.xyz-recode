@@ -21,6 +21,7 @@ namespace g
 
 	//fonts
 	extern DWORD weapon_font;
+	extern DWORD watermark_font;
 	extern DWORD CourierNew;
 	extern DWORD Tahoma;
 }

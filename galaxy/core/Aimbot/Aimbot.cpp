@@ -412,9 +412,6 @@ void Aimbot::OnCreateMove()
 			if (!Backtrack[targetID] && !ShotBacktrack[targetID])
 				g::Shot[targetID] = true;
 
-			if (galaxy_vars.cfg.Ak47meme)
-				g_pEngine->ExecuteClientCmd("play weapons\\ak47\\ak47-1.wav");
-
 			g::bSendPacket = true;
 			shot = true;
 

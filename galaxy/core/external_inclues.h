@@ -7,3 +7,4 @@
 #include "AntiAim\AntiAim.h"
 #include "Aimbot\Aimbot.h"
 #include "Legit\Legitbot.h"
+#include "Visuals/other_esp.h"

@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="galaxy\core\Visuals\other_esp.cpp" />
     <ClCompile Include="galaxy\c_hooks.cpp" />
     <ClCompile Include="galaxy\dll_main.cpp" />
     <ClCompile Include="galaxy\core\Aimbot\Aimbot.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="galaxy\valve_utils\NetvarManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="galaxy\core\Visuals\other_esp.h" />
     <ClInclude Include="galaxy\c_hooks.h" />
     <ClInclude Include="galaxy\core\Aimbot\Aimbot.h" />
     <ClInclude Include="galaxy\core\Aimbot\Autowall.h" />

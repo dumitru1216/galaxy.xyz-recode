@@ -183,19 +183,33 @@ void visuals_tab( ) {
 			chams_sub = 3;
 		}
 
-		const char* chams_material[] = { "textured", "eso" };
+		const char* chams_material[] = { "textured", "eso", "glow" };
 
 		if (chams_sub == 0)
 		{
 			ImGui::Checkbox( "enemy chams", &galaxy_vars.cfg.chams_enemy );
 			ImGui::SameLine( );
 			ImGui::ColorEdit4( "###normal_chamsenem", galaxy_vars.cfg.enemy_visible_colors, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+			ImGui::Checkbox( "enemy chams invisible", &galaxy_vars.cfg.enemy_invisible );
 			ImGui::Combo( "enemy materials [ normal ]", &galaxy_vars.cfg.normal_enemy_material, chams_material, IM_ARRAYSIZE( chams_material ) );
+			ImGui::Checkbox( "enemy chams overide", &galaxy_vars.cfg.enemy_overide_chams );
+			ImGui::SameLine( );
+			ImGui::ColorEdit4( "###overidecolorenemy", galaxy_vars.cfg.enemy_overide_colors, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+			ImGui::Combo( "enemy materials [ overide ]", &galaxy_vars.cfg.overide_enemy_material, chams_material, IM_ARRAYSIZE( chams_material ) );
+
 
 		}
 
 		if (chams_sub == 1)
 		{
+			ImGui::Checkbox( "local chams", &galaxy_vars.cfg.local_chams );
+			ImGui::SameLine( );
+			ImGui::ColorEdit4( "###noremal_locachams", galaxy_vars.cfg.local_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+			ImGui::Combo( "local materials [ normal ]", &galaxy_vars.cfg.local_materials, chams_material, IM_ARRAYSIZE( chams_material ) );
+			ImGui::Checkbox( "local chams overide", &galaxy_vars.cfg.local_chams_overide );
+			ImGui::SameLine( );
+			ImGui::ColorEdit4( "###localcamsoveride", galaxy_vars.cfg.local_overide_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+			ImGui::Combo( "local materials [ overide ]", &galaxy_vars.cfg.local_overide_materials, chams_material, IM_ARRAYSIZE( chams_material ) );
 
 		}
 
@@ -218,16 +232,14 @@ void visuals_tab( ) {
 
 	ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) - 9 );
 
-	ImGui::BeginChild( "Other ESP", ImVec2( 289, 152 ), true );
+	ImGui::BeginChild( "visuals [ other ]", ImVec2( 289, 152 ), true );
 	{
-		
+		ImGui::Checkbox( "world modulation", &galaxy_vars.cfg.NightMode );
+		ImGui::SliderInt( "nighmode scale", &galaxy_vars.cfg.NightModeSlider, 0, 100, "%.f%%" );
+		ImGui::Text( "sky color" );
+		ImGui::SameLine( );
+		ImGui::ColorEdit4( "###skycolor", galaxy_vars.cfg.sky_box_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
 
-		float old_x = ImGui::GetCursorPosX( );
-		float old_y = ImGui::GetCursorPosY( );
-
-		ImGui::SetCursorPosX( old_x + 18.0f );
-		ImGui::SetCursorPosY( old_y - 3.0f );
-		
 	}
 	ImGui::EndChild( true );
 
@@ -311,6 +323,8 @@ void c_menu::Render( )
 			ImGui::GetWindowDrawList( )->AddRectFilledMultiColor( ImVec2( p.x, p.y + 3 ), ImVec2( p.x + ImGui::GetWindowWidth( ) / 2, p.y + -3 ), ImColor( 0, 0, 0, 125 ), ImColor( 0, 0, 0, 15 ), ImColor( 0, 0, 0, 15 ), ImColor( 0, 0, 0, 125 ) );
 			ImGui::GetWindowDrawList( )->AddRectFilledMultiColor( ImVec2( p.x + ImGui::GetWindowWidth( ) / 2, p.y + 3 ), ImVec2( p.x + ImGui::GetWindowWidth( ), p.y + -3 ), ImColor( 0, 0, 0, 15 ), ImColor( 0, 0, 0, 125 ), ImColor( 0, 0, 0, 125 ), ImColor( 0, 0, 0, 15 ) );
 			ImGui::GetWindowDrawList( )->AddLine( ImVec2( p.x, p.y + 2 ), ImVec2( p.x + ImGui::GetWindowWidth( ), p.y + 2 ), ImColor( 0, 0, 0, 150 ) );
+
+		
 
 			ImGui::PushFont( MainCaps );
 			ImGui::Dummy( ImVec2( 250, 0 ) ); ImGui::SameLine( );

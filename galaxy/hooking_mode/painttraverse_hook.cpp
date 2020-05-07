@@ -29,7 +29,9 @@ void __fastcall c_hooks::PaintTraverse( PVOID pPanels, int edx, unsigned int vgu
 	if (panelID == vguiPanel)
 	{
 		esp.Render( );
+		c_other_esp.watermak( );
 		g_Misc.Crosshair( );
+		
 
 	}
 }
