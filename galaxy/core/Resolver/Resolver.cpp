@@ -1,5 +1,5 @@
 #include "Resolver.h"
-#include "..\Aimbot\Aimbot.h"
+#include "..\Aimbot\c_ragebot.h"
 #include "..\Aimbot\Autowall.h"
 #include "..\Aimbot\LagComp.h"
 #include "..\..\valve_utils\Utils.h"

@@ -1,5 +1,5 @@
 #include "c_esp.h"
-#include "..\Aimbot\Aimbot.h"
+#include "..\Aimbot\c_ragebot.h"
 #include "..\Aimbot\LagComp.h"
 #include "..\..\valve_utils\Utils.h"
 #include "..\..\valve_sdk\IVEngineClient.h"
@@ -170,7 +170,7 @@ void c_esp::BoundBox(C_BaseEntity* pEnt)
 	Vector2D w2sBottom, w2sTop;
 
 	Utils::WorldToScreen(pEnt->GetOrigin() - Vector(0, 0, 8), w2sBottom); 
-	Utils::WorldToScreen(pEnt->GetHitboxPosition(0, g_Aimbot.Matrix[pEnt->EntIndex()]) + Vector(0, 0, 10), w2sTop);
+	Utils::WorldToScreen(pEnt->GetHitboxPosition(0, aimbot.Matrix[pEnt->EntIndex()]) + Vector(0, 0, 10), w2sTop);
 	
 	int Middle = w2sBottom.y - w2sTop.y;
 	int Width = Middle / 3.f;

@@ -25,7 +25,7 @@ bool __fastcall c_hooks::CreateMove( IClientMode* thisptr, void* edx, float samp
 	g_Resolver.OnCreateMove( );
 	engine_prediction::RunEnginePred( );
 	g_AntiAim.OnCreateMove( );
-	g_Aimbot.OnCreateMove( );
+	aimbot.OnCreateMove( );
 	g_Legitbot.OnCreateMove( );
 	engine_prediction::EndEnginePred( );
 	g_Misc.MovementFix( g::OriginalView );

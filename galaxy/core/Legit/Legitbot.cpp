@@ -1,5 +1,5 @@
 #include "Legitbot.h"
-#include "..\Aimbot\Aimbot.h"
+#include "..\Aimbot\c_ragebot.h"
 #include "..\Aimbot\LagComp.h"
 #include "..\..\valve_utils\Utils.h"
 #include "..\..\valve_sdk\IVEngineClient.h"
@@ -49,7 +49,7 @@ void Legitbot::OnCreateMove()
 			Setup.SimTime = pPlayerEntity->GetSimulationTime();
 
 			for (int hitbox = 0; hitbox < 19; hitbox++)
-				Setup.HitBoxes[hitbox] = pPlayerEntity->GetHitboxPosition(hitbox, g_Aimbot.Matrix[pPlayerEntity->EntIndex()]);
+				Setup.HitBoxes[hitbox] = pPlayerEntity->GetHitboxPosition(hitbox, aimbot.Matrix[pPlayerEntity->EntIndex()]);
 
 			PlayerRecord[i].push_back(Setup);
 

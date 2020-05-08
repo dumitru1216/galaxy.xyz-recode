@@ -12,6 +12,68 @@ c_menu menu;
 
 ImFont* Main;
 ImFont* MainCaps;
+bool show_popup = false;
+bool save_config = false;
+bool load_config = false;
+bool reverse = false;
+int offset = 0;
+
+namespace ImGui
+{
+long get_mils( ) {
+	auto duration = std::chrono::system_clock::now( ).time_since_epoch( );
+	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count( );
+}
+
+void begin_popup( const char* text, int on_screen_mils, bool* done ) {
+	if (!done)
+		show_popup = true;
+
+	ImGuiIO& io = ImGui::GetIO( );
+	ImGuiStyle& style = ImGui::GetStyle( );
+	int width = io.DisplaySize.x;
+	static long old_time = -1;
+	ImGui::SetNextWindowPos( ImVec2( width - offset, 100 ) );
+	style.WindowMinSize = ImVec2( 100.f, 20.f );
+	ImGui::Begin( "##PopUpWindow", &show_popup, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize );
+	ImVec2 p = ImGui::GetCursorScreenPos( );
+
+	ImGui::GetWindowDrawList( )->AddRectFilledMultiColor( ImVec2( p.x - 15, p.y - 13 ), ImVec2( p.x + ImGui::GetWindowWidth( ), p.y - 16 ), ImColor( 20, 20, 20, 255 ), ImColor( 255, 255, 255, 255 ), ImColor( 255, 255, 255, 255 ), ImColor( 20, 20, 20, 255 ) );
+	long current_time_ms = get_mils( );
+
+	ImVec2 text_size = ImGui::CalcTextSize( text );
+	ImGui::SetCursorPosY( ImGui::GetWindowHeight( ) / 2 - text_size.y / 2 );
+	ImGui::Text( text );
+
+	if (!reverse) {
+		if (offset < ImGui::GetWindowWidth( ))
+			offset += (ImGui::GetWindowWidth( ) + 5) * ((1000.0f / ImGui::GetIO( ).Framerate) / 100);
+
+		if (offset >= ImGui::GetWindowWidth( ) && old_time == -1) {
+			old_time = current_time_ms;
+		}
+	}
+
+	if (current_time_ms - old_time >= on_screen_mils && old_time != -1)
+		reverse = true;
+
+	if (reverse) {
+		if (offset > 0)
+			offset -= (ImGui::GetWindowWidth( ) + 5) * ((1000.0f / ImGui::GetIO( ).Framerate) / 100);
+		if (offset <= 0) {
+			offset = 0;
+			reverse = false;
+			*done = true;
+			old_time = -1;
+			show_popup = false;
+		}
+	}
+
+	ImGui::End( );
+}
+
+}
+
 
 void c_menu::apply_fonts( )
 {
@@ -80,10 +142,10 @@ void rage_tab( ) {
 
 	ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, ImVec2( 16, 16 ) );
 
-	ImGui::BeginChild( "main 1", ImVec2( 269, 201 ), true );
+	ImGui::BeginChild( "ragebot [ main ]", ImVec2( 269, 201 ), true );
 	{
-		
-
+		ImGui::Checkbox( "enable aimbot", &galaxy_vars.cfg.Aimbot );
+		ImGui::Checkbox( "automatic stop", &galaxy_vars.cfg.Autostop );
 
 
 	}
@@ -93,11 +155,13 @@ void rage_tab( ) {
 	ImGui::Dummy( ImVec2( 0, -2 ) ); ImGui::SameLine( );
 	ImGui::Dummy( ImVec2( 0, 0 ) ); ImGui::SameLine( );
 	ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, ImVec2( 16, 16 ) );
-
-	ImGui::BeginChild( "main 2", ImVec2( 269, 152 ), true );
+	ImGui::BeginChild( "ragebot [ settings ]", ImVec2( 269, 152 ), true );
 	{
-
-
+		ImGui::SliderInt( "hitchance", &galaxy_vars.cfg.HitchanceValue, 0, 100, "%.f%%" );
+		ImGui::SliderInt( "minimum damage", &galaxy_vars.cfg.Mindmg, 0, 100, "%.f%%" );
+		ImGui::Checkbox( "multipoint", &galaxy_vars.cfg.MultiPoint );
+		ImGui::SliderInt( "head scale", &galaxy_vars.cfg.HeadScale, 0, 100, "%.f%%" );
+		ImGui::SliderInt( "body scale", &galaxy_vars.cfg.BodyScale, 0, 100, "%.f%%" );
 
 
 	}
@@ -107,7 +171,7 @@ void rage_tab( ) {
 
 	ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) - 9 );
 
-	ImGui::BeginChild( "main 3", ImVec2( 289, 152 ), true );
+	ImGui::BeginChild( "ragebot [ other ]", ImVec2( 289, 152 ), true );
 	{
 	}
 	ImGui::EndChild( true );
@@ -117,8 +181,9 @@ void rage_tab( ) {
 	ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) - 9 );
 	ImGui::SetCursorPosY( ImGui::GetCursorPosY( ) - 7 );
 
-	ImGui::BeginChild( "main 4", ImVec2( 289, 201 ), true );
+	ImGui::BeginChild( "ragebot [ anti-aim ]", ImVec2( 289, 201 ), true );
 	{
+		ImGui::Checkbox( "enable anti-aim", &galaxy_vars.cfg.Antiaim );
 	}
 	ImGui::EndChild( true );
 
@@ -296,7 +361,98 @@ void misc_tab( ) {
 }
 
 void config_tab( ) {
+	ImGui::Columns( 2, NULL, false );
 
+	ImGui::Dummy( ImVec2( 0, -2 ) ); ImGui::SameLine( );
+	ImGui::Dummy( ImVec2( 0, 0 ) ); ImGui::SameLine( );
+
+	ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, ImVec2( 16, 16 ) );
+
+	ImGui::BeginChild( "configs [ configs ]", ImVec2( 269, 361 ), true );
+	{
+		constexpr auto& config_items = galaxy_vars.get_configs( );
+		static int current_config = -1;
+
+		if (static_cast<size_t>(current_config) >= config_items.size( ))
+			current_config = -1;
+
+		static char buffer[16];
+
+		if (ImGui::ListBox( "", &current_config, []( void* data, int idx, const char** out_text ) {
+			auto& vector = *static_cast<std::vector<std::string>*>(data);
+			*out_text = vector[idx].c_str( );
+			return true;
+		}, &config_items, config_items.size( ), 5 ) && current_config != -1)
+			strcpy( buffer, config_items[current_config].c_str( ) );
+
+		ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) + 18 );
+		ImGui::PushID( 0 );
+		ImGui::PushItemWidth( 178 );
+		if (ImGui::InputText( "", buffer, IM_ARRAYSIZE( buffer ), ImGuiInputTextFlags_EnterReturnsTrue )) {
+			if (current_config != -1)
+				galaxy_vars.rename( current_config, buffer );
+		}
+		ImGui::PopID( );
+		ImGui::NextColumn( );
+
+		ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) + 18 );
+		if (ImGui::Button( ("create"), ImVec2( 85, 20 ) )) {
+			galaxy_vars.add( buffer );
+		}
+
+		ImGui::SameLine( );
+
+		if (ImGui::Button( ("reset"), ImVec2( 85, 20 ) )) {
+			galaxy_vars.reset( );
+		}
+
+		ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) + 18 );
+		if (current_config != -1) {
+			if (ImGui::Button( ("load"), ImVec2( 85, 20 ) )) {
+				galaxy_vars.load( current_config );
+
+				load_config = true;
+
+			}
+
+			ImGui::SameLine( );
+
+			if (ImGui::Button( ("save"), ImVec2( 85, 20 ) )) {
+				galaxy_vars.save( current_config );
+
+				save_config = true;
+
+			}
+
+			ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) + 18 );
+			if (ImGui::Button( ("remove"), ImVec2( 85, 20 ) )) {
+				galaxy_vars.remove( current_config );
+			}
+		}
+	}
+	ImGui::EndChild( true );
+	ImGui::NextColumn( );
+	ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) - 9 );
+
+	ImGui::BeginChild( "config [ lua -> presets ]", ImVec2( 289, 152 ), true );
+	{
+
+	}
+	ImGui::EndChild( true );
+
+	ImGui::Spacing( );
+
+	ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) - 9 );
+	ImGui::SetCursorPosY( ImGui::GetCursorPosY( ) - 7 );
+
+	ImGui::BeginChild( "config [ lua -> custom ]", ImVec2( 289, 201 ), true );
+	{
+
+	}
+	ImGui::EndChild( true );
+
+	ImGui::PopStyleVar( );
+	ImGui::Columns( );
 }
 
 void c_menu::Render( )
@@ -351,9 +507,9 @@ void c_menu::Render( )
 			ImGui::PushFont( Main );
 
 			switch (page) {
-			case 0: legit_tab( );
+			case 0: rage_tab( );
 				break;
-			case 1: rage_tab( );
+			case 1: legit_tab( );
 				break;
 			case 2: visuals_tab( );
 				break;
@@ -366,5 +522,33 @@ void c_menu::Render( )
 			ImGui::PopFont( );
 		}
 		ImGui::End( );
+
 	}
+}
+
+void c_menu::run_popup( )
+{
+	ImGui::PushFont( Main );
+	ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, ImVec2( 16, 16 ) );
+	ImGui::PushStyleColor( ImGuiCol_ChildWindowBg, ImVec4( 30 / 255.f, 30 / 255.f, 39 / 255.f, 1.0f ) );
+	ImGui::PushStyleColor( ImGuiCol_Border, ImVec4( 0 / 255.f, 0 / 255.f, 0 / 255.f, 0.1f ) );
+
+	if (save_config) {
+		bool done = false;
+		ImGui::begin_popup( "config saved.", 2000, &done );
+		if (done)
+			save_config = false;
+	}
+
+	if (load_config) {
+		bool done = false;
+		ImGui::begin_popup( "config loaded.", 2000, &done );
+		if (done)
+			load_config = false;
+	}
+
+	ImGui::PopStyleColor( );
+	ImGui::PopStyleColor( );
+	ImGui::PopStyleVar( );
+	ImGui::PopFont( );
 }

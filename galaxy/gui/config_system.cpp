@@ -9,11 +9,11 @@ c_config galaxy_vars;
 //let's do automatic config setup
 //anyway this have bug
 
-void c_config::run(  ) noexcept {
+void c_config::run( const char* name ) noexcept {
 	PWSTR pathToDocuments;
 	if (SUCCEEDED( SHGetKnownFolderPath( FOLDERID_Documents, 0, NULL, &pathToDocuments ) )) {
 		path = pathToDocuments;
-		path /= "galaxy.xyz";
+		path /= name;
 		CoTaskMemFree( pathToDocuments );
 	}
 

@@ -4,7 +4,7 @@
 class c_config final
 {
 public:
-	void run( ) noexcept;
+	void run( const char* name ) noexcept;
 	void load( size_t ) noexcept;
 	void save( size_t ) const noexcept;
 	void add( const char* ) noexcept;

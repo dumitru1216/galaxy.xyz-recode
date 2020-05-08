@@ -1,5 +1,5 @@
 #include "other_esp.h"
-#include "..\Aimbot\Aimbot.h"
+#include "..\Aimbot\c_ragebot.h"
 #include "..\Aimbot\LagComp.h"
 #include "..\..\valve_utils\Utils.h"
 #include "..\..\valve_sdk\IVEngineClient.h"

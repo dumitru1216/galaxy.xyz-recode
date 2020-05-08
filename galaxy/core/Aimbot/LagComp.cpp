@@ -1,5 +1,5 @@
 #include "LagComp.h"
-#include "Aimbot.h"
+#include "c_ragebot.h"
 #include "..\..\valve_utils\Utils.h"
 #include "..\..\valve_sdk\IVEngineClient.h"
 #include "..\..\valve_sdk\PlayerInfo.h"
@@ -55,7 +55,7 @@ void LagComp::StoreRecord(C_BaseEntity* pEnt) // best lag comp in the world
 	static float OldSimtime[65];
 
 	if (pEnt != g::pLocalEntity)
-		pEnt->FixSetupBones(g_Aimbot.Matrix[pEnt->EntIndex()]);
+		pEnt->FixSetupBones( aimbot.Matrix[pEnt->EntIndex()]);
 
 	if (PlayerRecord[pEnt->EntIndex()].size() == 0)
 	{
@@ -63,7 +63,7 @@ void LagComp::StoreRecord(C_BaseEntity* pEnt) // best lag comp in the world
 
 		Setup.SimTime = pEnt->GetSimulationTime();
 
-		memcpy(Setup.Matrix, g_Aimbot.Matrix[pEnt->EntIndex()], (sizeof(matrix3x4_t) * 128));
+		memcpy(Setup.Matrix, aimbot.Matrix[pEnt->EntIndex()], (sizeof(matrix3x4_t) * 128));
 
 		Setup.Shot = false;
 
@@ -77,9 +77,9 @@ void LagComp::StoreRecord(C_BaseEntity* pEnt) // best lag comp in the world
 		Setup.SimTime = pEnt->GetSimulationTime();
 
 		if (pEnt == g::pLocalEntity)
-			pEnt->FixSetupBones(g_Aimbot.Matrix[pEnt->EntIndex()]);
+			pEnt->FixSetupBones( aimbot.Matrix[pEnt->EntIndex()]);
 
-		memcpy(Setup.Matrix, g_Aimbot.Matrix[pEnt->EntIndex()], (sizeof(matrix3x4_t) * 128));
+		memcpy(Setup.Matrix, aimbot.Matrix[pEnt->EntIndex()], (sizeof(matrix3x4_t) * 128));
 
 		if (pEnt->GetActiveWeapon() && !pEnt->IsKnifeorNade())
 		{

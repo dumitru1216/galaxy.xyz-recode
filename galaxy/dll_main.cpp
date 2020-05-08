@@ -2,6 +2,7 @@
 #include "c_hooks.h"
 #include "valve_utils\Utils.h"
 #include "valve_utils\GlobalVars.h"
+#include "gui/config_system.h"
 
 
 HINSTANCE HThisModule;
@@ -23,7 +24,7 @@ DWORD WINAPI attach( void* instance ) {
 		FreeLibraryAndExitThread( static_cast<HMODULE>(instance), 0 );
 	}
 
-
+	galaxy_vars.run( "galaxy.xyz" );
 
 
 

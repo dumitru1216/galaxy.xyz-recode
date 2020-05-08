@@ -5,6 +5,6 @@
 #include "Misc\Misc.h"
 #include "Resolver\Resolver.h"
 #include "AntiAim\AntiAim.h"
-#include "Aimbot\Aimbot.h"
+#include "Aimbot\c_ragebot.h"
 #include "Legit\Legitbot.h"
 #include "Visuals/other_esp.h"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "..\Aimbot\Autowall.h"
-#include "..\Aimbot\Aimbot.h"
+#include "..\Aimbot\c_ragebot.h"
 #include "..\Aimbot\LagComp.h"
 #include "..\..\valve_utils\GlobalVars.h"
 #include "..\..\valve_utils\Math.h"
@@ -300,9 +300,9 @@ private:
 					|| pPlayerEntity->GetTeam() == g::pLocalEntity->GetTeam())
 					continue;
 
-				Vector EnemyHead = { pPlayerEntity->GetOrigin().x, pPlayerEntity->GetOrigin().y, (pPlayerEntity->GetHitboxPosition(0, g_Aimbot.Matrix[pPlayerEntity->EntIndex()]).z + 10.f) };
+				Vector EnemyHead = { pPlayerEntity->GetOrigin().x, pPlayerEntity->GetOrigin().y, (pPlayerEntity->GetHitboxPosition(0, aimbot.Matrix[pPlayerEntity->EntIndex()]).z + 10.f) };
 
-				Vector Head = { g::pLocalEntity->GetOrigin().x, g::pLocalEntity->GetOrigin().y, (g::pLocalEntity->GetHitboxPosition(0, g_Aimbot.Matrix[pPlayerEntity->EntIndex()]).z + 10.f) };
+				Vector Head = { g::pLocalEntity->GetOrigin().x, g::pLocalEntity->GetOrigin().y, (g::pLocalEntity->GetHitboxPosition(0, aimbot.Matrix[pPlayerEntity->EntIndex()]).z + 10.f) };
 				Vector HeadExtr = (Head + (g::pLocalEntity->GetVelocity() * 0.203125f));
 				Vector OriginExtr = ((g::pLocalEntity->GetOrigin() + (g::pLocalEntity->GetVelocity() * 0.21875f)) + Vector(0, 0, 8));
 

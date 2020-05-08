@@ -10,6 +10,7 @@ public:
 	bool menuOpened = false;
 	void Render( );
 	void apply_fonts( );
+	void run_popup( );
 
 };
 extern c_menu menu;

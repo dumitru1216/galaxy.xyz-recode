@@ -165,6 +165,7 @@ void __stdcall c_hooks::Hooked_EndScene( IDirect3DDevice9* pDevice )
 		pre_render( pDevice );
 		post_render( );
 
+		menu.run_popup( );
 		menu.Render( );
 		end_present( pDevice );
 	}
