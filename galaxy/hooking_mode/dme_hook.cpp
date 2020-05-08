@@ -41,6 +41,9 @@ void __fastcall c_hooks::DrawModelExecute( void* ecx, void* edx, IMatRenderConte
 	static IMaterial* normal_local;
 	static IMaterial* overide_local;
 
+	//desync
+	static IMaterial* desync_material;
+
 	glowOverlay = g_pMaterialSys->FindMaterial( "glowOverlay.vmt", TEXTURE_GROUP_OTHER );
 	materialRegular = g_pMaterialSys->FindMaterial( "textured_virt", TEXTURE_GROUP_MODEL );
 	rifk_glow = g_pMaterialSys->FindMaterial( "dev/glow_armsrace", TEXTURE_GROUP_OTHER );
@@ -109,12 +112,64 @@ void __fastcall c_hooks::DrawModelExecute( void* ecx, void* edx, IMatRenderConte
 		break;
 		//---------------------------------
 	}
+	//desync normal
+	switch (galaxy_vars.cfg.desync_chams_material)
+	{
+	case 0:
+		desync_material = materialRegular;
+		break;
+		//---------------------------------
+	case 1:
+		desync_material = glowOverlay;
+		break;
+		//---------------------------------
+	case 2:
+		desync_material = rifk_glow;
+		break;
+		//---------------------------------
+	}
 
 	//entity modelname
 	if (pPlayerEntity && strstr( ModelName, "models/player" ))
 	{
 		if (info.index == g_pEngine->GetLocalPlayer( ) && strstr( ModelName, "models/player" ))
 		{
+			if (g::m_got_fake_matrix)
+			{
+				if (galaxy_vars.cfg.desync_chams) { // enabled
+					for (auto& i : g::m_fake_matrix)
+					{
+						i[0][3] += info.origin.x;
+						i[1][3] += info.origin.y;
+						i[2][3] += info.origin.z;
+					}
+					// visible
+					{
+
+						desync_material->SetMaterialVarFlag( MATERIAL_VAR_IGNOREZ, false );
+						modulate( galaxy_vars.cfg.desync_chams_color, desync_material );
+						g_pModelRender->ForcedMaterialOverride( desync_material );
+						oDrawModelExecute( g_pModelRender, context, state, info, g::m_fake_matrix ); // 0
+
+/*						if (galaxy_vars.cfg.deysnc_Overid)
+						{
+							desync_layer->SetMaterialVarFlag( MATERIAL_VAR_IGNOREZ, false );
+							modulate( galaxy_vars.cfg.desync_chams_overide, desync_layer );
+							g_MdlRender->ForcedMaterialOverride( desync_layer );
+							oDrawModelExecute( g_MdlRender, context, state, info, g_AntiAim.m_fake_matrix ); // 0
+						}*/
+
+					}
+					for (auto& i : g::m_fake_matrix)
+					{
+						i[0][3] -= info.origin.x;
+						i[1][3] -= info.origin.y;
+						i[2][3] -= info.origin.z;
+					}
+					g_pModelRender->ForcedMaterialOverride( nullptr );
+				}
+			}
+
 			if (galaxy_vars.cfg.local_chams)
 			{
 				normal_local->SetMaterialVarFlag( MATERIAL_VAR_WIREFRAME, false );
@@ -159,13 +214,10 @@ void __fastcall c_hooks::DrawModelExecute( void* ecx, void* edx, IMatRenderConte
 					oDrawModelExecute( ecx, context, state, info, matrix );
 
 				}
-			}
-
-			
-		
-			
+			}		
 		
 		}
+
 
 	}
 

@@ -91,65 +91,6 @@ bool c_aimbot::HitChance( C_BaseEntity* pEnt, C_BaseCombatWeapon* pWeapon, Vecto
 	return false;
 }
 
-bool ShouldBaim( C_BaseEntity* pEnt ) // probably dosnt make sense
-{
-	static float oldSimtime[65];
-	static float storedSimtime[65];
-
-	static float ShotTime[65];
-	static float NextShotTime[65];
-	static bool BaimShot[65];
-
-	if (storedSimtime[pEnt->EntIndex( )] != pEnt->GetSimulationTime( ))
-	{
-		oldSimtime[pEnt->EntIndex( )] = storedSimtime[pEnt->EntIndex( )];
-		storedSimtime[pEnt->EntIndex( )] = pEnt->GetSimulationTime( );
-	}
-
-	float simDelta = storedSimtime[pEnt->EntIndex( )] - oldSimtime[pEnt->EntIndex( )];
-
-	bool Shot = false;
-
-	if (pEnt->GetActiveWeapon( ) && !pEnt->IsKnifeorNade( ))
-	{
-		if (ShotTime[pEnt->EntIndex( )] != pEnt->GetActiveWeapon( )->GetLastShotTime( ))
-		{
-			Shot = true;
-			BaimShot[pEnt->EntIndex( )] = false;
-			ShotTime[pEnt->EntIndex( )] = pEnt->GetActiveWeapon( )->GetLastShotTime( );
-		}
-		else
-			Shot = false;
-	}
-	else
-	{
-		Shot = false;
-		ShotTime[pEnt->EntIndex( )] = 0.f;
-	}
-
-	if (Shot)
-	{
-		NextShotTime[pEnt->EntIndex( )] = pEnt->GetSimulationTime( ) + pEnt->FireRate( );
-
-		if (simDelta >= pEnt->FireRate( ))
-			BaimShot[pEnt->EntIndex( )] = true;
-	}
-
-	if (BaimShot[pEnt->EntIndex( )])
-	{
-		if (pEnt->GetSimulationTime( ) >= NextShotTime[pEnt->EntIndex( )])
-			BaimShot[pEnt->EntIndex( )] = false;
-	}
-
-	if (galaxy_vars.cfg.BaimPitch && BaimShot[pEnt->EntIndex( )] && !(pEnt->GetFlags( ) & FL_ONGROUND))
-		return true;
-
-	if (galaxy_vars.cfg.BaimInAir && !(pEnt->GetFlags( ) & FL_ONGROUND))
-		return true;
-
-	return false;
-}
-
 Vector c_aimbot::Hitscan( C_BaseEntity* pEnt ) // supremeemmemememememe
 {
 	float DamageArray[28];
@@ -172,51 +113,47 @@ Vector c_aimbot::Hitscan( C_BaseEntity* pEnt ) // supremeemmemememememe
 
 	int HeadHeight = 0;
 
-	bool Baim = ShouldBaim( pEnt );
 
-	if (!Baim)
-		Scan.push_back( HITBOX_HEAD );
-
-	if (Velocity <= 215.f || Baim)
+	if (Velocity <= 215.f)
 	{
-		Scan.push_back( HITBOX_PELVIS );
-		Scan.push_back( HITBOX_THORAX );
-		Scan.push_back( HITBOX_LOWER_CHEST );
-		Scan.push_back( HITBOX_UPPER_CHEST );
-
 		if (galaxy_vars.cfg.MultiPoint)
 		{
-			Scan.push_back( 19 );//pelvis
-			Scan.push_back( 20 );
-
-			Scan.push_back( 21 );//thorax
-			Scan.push_back( 22 );
-
-			Scan.push_back( 23 );//upperchest
-			Scan.push_back( 24 );
-
-			if (!Baim)
+			if (galaxy_vars.cfg.head)
 			{
-				Scan.push_back( 25 );//head
-				Scan.push_back( 26 );
-				Scan.push_back( 27 );
+				Scan.push_back( (int)HitboxList::Head );
 			}
-
-			HeadHeight = galaxy_vars.cfg.HeadScale;
+			if (galaxy_vars.cfg.body)
+			{
+				Scan.push_back( (int)HitboxList::Pelvis );
+				Scan.push_back( (int)HitboxList::Stomach );
+				Scan.push_back( (int)HitboxList::Chest );
+				Scan.push_back( (int)HitboxList::UpperChest );				
+			}
+			if (galaxy_vars.cfg.arms)
+			{
+				Scan.push_back( (int)HitboxList::LeftUpperArm );
+				Scan.push_back( (int)HitboxList::RightUpperArm );
+				Scan.push_back( (int)HitboxList::LeftLowerArm );
+				Scan.push_back( (int)HitboxList::RightLowerArm );
+			}
+			if (galaxy_vars.cfg.neck)
+			{
+				Scan.push_back( (int)HitboxList::Neck );
+			}
+			if (galaxy_vars.cfg.legs)
+			{
+				Scan.push_back( (int)HitboxList::LeftThigh );
+				Scan.push_back( (int)HitboxList::RightThigh );
+				Scan.push_back( (int)HitboxList::LeftFoot );
+				Scan.push_back( (int)HitboxList::RightFoot );
+				Scan.push_back( (int)HitboxList::LeftShin );
+				Scan.push_back( (int)HitboxList::RightShin );
+			}
+				
 		}
 
-		if (!galaxy_vars.cfg.IgnoreLimbs)
-			Velocity = 0.f;
+		HeadHeight = galaxy_vars.cfg.HeadScale;
 
-		if (Velocity <= 29.f)
-		{
-			Scan.push_back( HITBOX_LEFT_FOOT );
-			Scan.push_back( HITBOX_RIGHT_FOOT );
-			Scan.push_back( HITBOX_LEFT_UPPER_ARM );
-			Scan.push_back( HITBOX_RIGHT_UPPER_ARM );
-			Scan.push_back( HITBOX_LEFT_THIGH );
-			Scan.push_back( HITBOX_RIGHT_THIGH );
-		}
 	}
 
 	Vector Hitbox;
@@ -251,12 +188,6 @@ Vector c_aimbot::Hitscan( C_BaseEntity* pEnt ) // supremeemmemememememe
 		else
 			DamageArray[hitbox] = 0;
 
-		if (galaxy_vars.cfg.BaimLethal && hitbox != 0 && hitbox != 25 && hitbox != 26 && hitbox != 27 && Damage >= (pEnt->GetHealth( ) + 10))
-		{
-			DamageArray[hitbox] = 400;
-			Baim = true;
-		}
-
 		if (DamageArray[hitbox] > tempDmg)
 		{
 			tempHitbox = Hitbox;
@@ -272,13 +203,7 @@ Vector c_aimbot::Hitscan( C_BaseEntity* pEnt ) // supremeemmemememememe
 	Backtrack[pEnt->EntIndex( )] = false;
 	ShotBacktrack[pEnt->EntIndex( )] = false;
 
-	if (galaxy_vars.cfg.ShotBacktrack && g_LagComp.ShotTick[pEnt->EntIndex( )] != -1 && g_Autowall.CanHitFloatingPoint( pEnt->GetHitboxPosition( HITBOX_HEAD, g_LagComp.PlayerRecord[pEnt->EntIndex( )].at( g_LagComp.ShotTick[pEnt->EntIndex( )] ).Matrix ) + Vector( 0, 0, 1 ), g::pLocalEntity->GetEyePosition( ) ) && !Baim)
-	{
-		bestEntDmg = (1000000.f - fabs( g_Math.Distance( Vector2D( g::pLocalEntity->GetOrigin( ).x, g::pLocalEntity->GetOrigin( ).y ), Vector2D( pEnt->GetOrigin( ).x, pEnt->GetOrigin( ).y ) ) )); // just doing this to get the closest player im backtracking
-		ShotBacktrack[pEnt->EntIndex( )] = true;
-		return pEnt->GetHitboxPosition( HITBOX_HEAD, g_LagComp.PlayerRecord[pEnt->EntIndex( )].at( g_LagComp.ShotTick[pEnt->EntIndex( )] ).Matrix ) + Vector( 0, 0, 1 );
-	}
-	else if (tempDmg >= galaxy_vars.cfg.Mindmg)
+	if (tempDmg >= galaxy_vars.cfg.Mindmg)
 	{
 		bestEntDmg = tempDmg;
 
@@ -292,12 +217,6 @@ Vector c_aimbot::Hitscan( C_BaseEntity* pEnt ) // supremeemmemememememe
 			return pEnt->GetHitboxPosition( HITBOX_UPPER_CHEST, Matrix[pEnt->EntIndex( )] );
 
 		return tempHitbox;
-	}
-	else if (galaxy_vars.cfg.PosBacktrack && pPlayerEntityRecord.Velocity >= 29.f && g_Autowall.CanHitFloatingPoint( pEnt->GetHitboxPosition( HITBOX_HEAD, pPlayerEntityRecord.Matrix ), g::pLocalEntity->GetEyePosition( ) ))
-	{
-		bestEntDmg = (100000.f - fabs( g_Math.Distance( Vector2D( g::pLocalEntity->GetOrigin( ).x, g::pLocalEntity->GetOrigin( ).y ), Vector2D( pEnt->GetOrigin( ).x, pEnt->GetOrigin( ).y ) ) ));
-		Backtrack[pEnt->EntIndex( )] = true;
-		return pEnt->GetHitboxPosition( HITBOX_HEAD, pPlayerEntityRecord.Matrix );
 	}
 
 	return Vector( 0, 0, 0 );

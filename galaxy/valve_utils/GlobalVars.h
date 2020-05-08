@@ -19,6 +19,9 @@ namespace g
 	extern bool           Hit[65];
 	extern int            MissedShots[65];
 
+	extern matrix3x4_t m_fake_matrix[128];
+	extern bool m_got_fake_matrix;
+
 	//fonts
 	extern DWORD weapon_font;
 	extern DWORD watermark_font;

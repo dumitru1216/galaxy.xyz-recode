@@ -1564,3 +1564,16 @@ inline void QAngleAdd(const QAngle& a, const QAngle& b, QAngle& c)
     c.y = a.y + b.y;
     c.z = a.z + b.z;
 }
+
+class quaternion {
+public:
+	quaternion( ) : x( 0 ), y( 0 ), z( 0 ), w( 0 ) { }
+	quaternion( float ix, float iy, float iz, float iw ) : x( ix ), y( iy ), z( iz ), w( iw ) { }
+
+	void init( float ix = 0.0f, float iy = 0.0f, float iz = 0.0f, float iw = 0.0f ) { x = ix; y = iy; z = iz; w = iw; }
+
+	float* base( ) { return reinterpret_cast<float*>(this); }
+	const float* base( ) const { return reinterpret_cast<const float*>(this); }
+
+	float x, y, z, w;
+};

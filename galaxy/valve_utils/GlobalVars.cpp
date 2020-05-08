@@ -17,8 +17,8 @@ namespace g
 	bool           Shot[65];
 	bool           Hit[65];
 	int            MissedShots[65];
-
-
+	bool m_got_fake_matrix = false;
+	matrix3x4_t m_fake_matrix[128];
 	//fonts
 	DWORD weapon_font;
 	DWORD watermark_font;

@@ -117,6 +117,9 @@
     <ClCompile Include="galaxy\core\Aimbot\c_ragebot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="galaxy\core\Animations System\animation_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="galaxy\hooking_mode\hooking_init.h">
@@ -315,6 +318,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="galaxy\core\Aimbot\c_ragebot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\core\Animations System\animation_system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\valve_sdk\datamap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

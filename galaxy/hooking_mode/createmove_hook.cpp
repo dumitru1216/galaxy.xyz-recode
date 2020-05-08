@@ -33,7 +33,7 @@ bool __fastcall c_hooks::CreateMove( IClientMode* thisptr, void* edx, float samp
 
 	if (g::bSendPacket)
 		g::RealAngle = g::pCmd->viewangles;
-
+	g_AntiAim.desyncchams( );
 	*(bool*)(*framePtr - 0x1C) = g::bSendPacket;
 
 	g::pCmd->buttons |= IN_BULLRUSH; // hehe

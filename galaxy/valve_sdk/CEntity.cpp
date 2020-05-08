@@ -81,6 +81,22 @@ void C_BaseEntity::SetAbsVelocity(Vector velocity) // i dont remember
 	AbsVelocity(this, velocity);
 }
 
+void IKContext::init( studiohdr_t* hdr, Vector& angles, Vector& origin, float curtime, int framecount, int boneMask ) {
+	static const auto ik_init_address = Utils::FindSignature( "client_panorama.dll", "55 8B EC 83 EC 08 8B 45 08 56 57 8B F9 8D 8F" );
+	reinterpret_cast<void( __thiscall* )(IKContext*, studiohdr_t*, Vector&, Vector&, float, int, int)>(ik_init_address)(this, hdr, angles, origin, curtime, framecount, boneMask);
+}
+
+void IKContext::update_targets( Vector* pos, quaternion* q, matrix3x4_t* bone_array, byte* computed ) {
+	static const auto update_targets_address = Utils::FindSignature( "client_panorama.dll", "55 8B EC 83 E4 F0 81 EC ? ? ? ? 33 D2" );
+	reinterpret_cast<void( __thiscall* )(IKContext*, Vector*, quaternion*, matrix3x4_t*, byte*)>(update_targets_address)(this, pos, q, bone_array, computed);
+}
+
+void IKContext::solve_dependencies( Vector* pos, quaternion* q, matrix3x4_t* bone_array, byte* computed ) {
+	static const auto solve_dependencies_address = Utils::FindSignature( "client_panorama.dll", "55 8B EC 83 E4 F0 81 EC ? ? ? ? 8B 81" );
+	reinterpret_cast<void( __thiscall* )(IKContext*, Vector*, quaternion*, matrix3x4_t*, byte*)>(solve_dependencies_address)(this, pos, q, bone_array, computed);
+}
+
+
 bool C_BaseEntity::IsKnifeorNade()
 {
 	if (!this)

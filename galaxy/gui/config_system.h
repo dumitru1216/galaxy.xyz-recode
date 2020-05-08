@@ -37,6 +37,21 @@ public:
 		bool BaimPitch;
 		bool BaimInAir;
 
+		// - hitbox - //
+		bool head;
+		bool body;
+		bool neck;
+	
+		bool desync_chams;
+		float desync_chams_overide[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float desync_chams_color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		int desync_chams_material;
+		int desync_chams_overide_material;
+		bool deysnc_Overid;
+
+		bool legs;
+		bool arms;
+
 		bool Antiaim;
 		bool DesyncAngle;
 		bool RandJitterInRange;

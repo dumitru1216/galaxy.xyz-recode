@@ -159,9 +159,8 @@ void rage_tab( ) {
 	{
 		ImGui::SliderInt( "hitchance", &galaxy_vars.cfg.HitchanceValue, 0, 100, "%.f%%" );
 		ImGui::SliderInt( "minimum damage", &galaxy_vars.cfg.Mindmg, 0, 100, "%.f%%" );
-		ImGui::Checkbox( "multipoint", &galaxy_vars.cfg.MultiPoint );
-		ImGui::SliderInt( "head scale", &galaxy_vars.cfg.HeadScale, 0, 100, "%.f%%" );
-		ImGui::SliderInt( "body scale", &galaxy_vars.cfg.BodyScale, 0, 100, "%.f%%" );
+		
+
 
 
 	}
@@ -171,8 +170,23 @@ void rage_tab( ) {
 
 	ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) - 9 );
 
-	ImGui::BeginChild( "ragebot [ other ]", ImVec2( 289, 152 ), true );
+	ImGui::BeginChild( "ragebot [ multipoint ]", ImVec2( 289, 152 ), true );
 	{
+		ImGui::Checkbox( "multipoint", &galaxy_vars.cfg.MultiPoint );
+		if (galaxy_vars.cfg.MultiPoint)
+		{
+			ImGui::Checkbox( "head", &galaxy_vars.cfg.head );
+			ImGui::SameLine( );
+			ImGui::Checkbox( "body", &galaxy_vars.cfg.body );
+			ImGui::SameLine( );
+			ImGui::Checkbox( "neck", &galaxy_vars.cfg.neck );
+			ImGui::Checkbox( "legs", &galaxy_vars.cfg.legs );
+			ImGui::SameLine( );
+			ImGui::Checkbox( "arms", &galaxy_vars.cfg.arms );
+		}
+		ImGui::Text( "multipoint scale" );
+		ImGui::SliderInt( "head scale", &galaxy_vars.cfg.HeadScale, 0, 100, "%.f%%" );
+		ImGui::SliderInt( "body scale", &galaxy_vars.cfg.BodyScale, 0, 100, "%.f%%" );
 	}
 	ImGui::EndChild( true );
 
@@ -276,6 +290,8 @@ void visuals_tab( ) {
 			ImGui::ColorEdit4( "###localcamsoveride", galaxy_vars.cfg.local_overide_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
 			ImGui::Combo( "local materials [ overide ]", &galaxy_vars.cfg.local_overide_materials, chams_material, IM_ARRAYSIZE( chams_material ) );
 
+			ImGui::Checkbox( "desyncchas", &galaxy_vars.cfg.desync_chams );
+
 		}
 
 		if (chams_sub == 2)
@@ -315,6 +331,9 @@ void visuals_tab( ) {
 
 	ImGui::BeginChild( "Effects", ImVec2( 289, 201 ), true );
 	{
+		ImGui::Checkbox( "remove scope", &galaxy_vars.cfg.NoScope );
+		ImGui::Checkbox( "remove visual recoil", &galaxy_vars.cfg.NoRecoil );
+		ImGui::Checkbox( "remove zoom", &galaxy_vars.cfg.NoZoom );
 		
 	}
 	ImGui::EndChild( true );

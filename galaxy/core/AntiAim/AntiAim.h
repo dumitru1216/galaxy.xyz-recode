@@ -7,6 +7,7 @@ class AntiAim
 public:
 	void OnCreateMove();
 
+	void desyncchams();
 private:
 
 };

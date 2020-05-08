@@ -42,6 +42,7 @@ IVModelInfo*		g_pModelInfo	= nullptr;
 CModelRender*       g_pModelRender  = nullptr;
 IMaterialSystem*    g_pMaterialSys  = nullptr;
 IVRenderView*       g_pRenderView   = nullptr;
+IMemAlloc*			g_pMemAlloc		= nullptr;
 
 namespace interfaces
 {
@@ -110,6 +111,7 @@ namespace interfaces
 		g_pModelRender  = FindClass<CModelRender>("engine.dll", "VEngineModel");
 		g_pMaterialSys  = FindClass<IMaterialSystem>("materialsystem.dll", "VMaterialSystem");
 		g_pRenderView   = FindClass<IVRenderView>("engine.dll", "VEngineRenderView");
+		g_pMemAlloc = *reinterpret_cast<IMemAlloc**> (GetProcAddress( GetModuleHandleA( "tier0.dll" ), "g_pMemAlloc" ));
 
 		//thanks monarch (from yeti)
 		

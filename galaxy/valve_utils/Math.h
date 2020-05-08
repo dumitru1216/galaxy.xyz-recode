@@ -7,7 +7,10 @@ class Math {
 public:
 
 	void VectorAngles(const Vector &vecForward, Vector &vecAngles);
-
+	void angle_matrix( const Vector& angles, matrix3x4_t& matrix );
+	void angle_matrix( const Vector& angles, const Vector& position, matrix3x4_t& matrix );
+	__forceinline matrix3x4_t angle_matrix( const Vector angles );
+	matrix3x4_t angle_matrix( const Vector angle, const Vector pos );
 	void VectorAngles(const Vector& forward, Vector& up, Vector& angles);
 
 	void VectorTransform(const Vector in1, const matrix3x4_t in2, Vector &out);

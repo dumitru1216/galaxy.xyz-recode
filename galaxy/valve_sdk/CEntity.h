@@ -4,7 +4,211 @@
 #include "IClientEntityList.h"
 #include "CInput.h"
 #include "..\valve_utils\Utils.h"
+#include "IVModelInfo.h"
 #include "..\valve_utils\NetvarManager.h"
+
+#define OFFSET( type, offset )		( *( type* ) ( ( std::uintptr_t ) this + ( offset ) ) )
+#define OFFSETPTR( type, offset )    ( ( type ) ( ( std::uintptr_t ) this + ( offset ) ) )
+#define FOFFSET( type, ptr, offset ) ( ( type ) ( ( std::uintptr_t ) (ptr) + ( offset ) ) )
+#define Assert( _exp ) ((void)0)
+#define offset(func, type, offset) type& func { return *reinterpret_cast<type*>(reinterpret_cast<uintptr_t>(this) + offset); }
+
+#define member_func_args(...) (this, __VA_ARGS__ ); }
+#define vfunc(index, func, sig) auto func { return reinterpret_cast<sig>((*(uint32_t**)this)[index]) member_func_args
+class IKContext
+{
+public:
+	void init( studiohdr_t* hdr, Vector& angles, Vector& origin, float curtime, int framecount, int boneMask );
+	void update_targets( Vector* pos, quaternion* q, matrix3x4_t* bone_array, byte* computed );
+	void solve_dependencies( Vector* pos, quaternion* q, matrix3x4_t* bone_array, byte* computed );
+
+	void clear_targets( )
+	{
+		
+		auto v56 = 0;
+		if (*(int*)((DWORD)this + 4080) > 0)
+		{
+			auto v57 = (int*)((DWORD)this + 208);
+			do
+			{
+				*v57 = -9999;
+				v57 += 85;
+				++v56;
+			} while (v56 < *(int*)((DWORD)this + 4080));
+		}
+	}
+};
+
+
+class CBasePlayerAnimState
+{
+public:
+	char pad[4];
+	char bUnknown; //0x4
+	char pad2[91];
+	void* pBaseEntity; //0x60
+	void* pActiveWeapon; //0x64
+	void* pLastActiveWeapon; //0x68
+	float m_flLastClientSideAnimationUpdateTime; //0x6C
+	int m_iLastClientSideAnimationUpdateFramecount; //0x70
+	float m_flEyePitch; //0x74
+	float m_flEyeYaw; //0x78
+	float m_flPitch; //0x7C
+	float m_flGoalFeetYaw; //0x80
+	float m_flCurrentFeetYaw; //0x84
+	float m_flCurrentTorsoYaw; //0x88
+	float m_flUnknownVelocityLean; //0x8C //changes when moving/jumping/hitting ground
+	float m_flLeanAmount; //0x90
+	char pad4[4]; //NaN
+	float m_flFeetCycle; //0x98 0 to 1
+	float m_flFeetYawRate; //0x9C 0 to 1
+	float m_fUnknown2;
+	float m_fDuckAmount; //0xA4
+	float m_fLandingDuckAdditiveSomething; //0xA8
+	float m_fUnknown3; //0xAC
+	Vector m_vOrigin; //0xB0, 0xB4, 0xB8
+	Vector m_vLastOrigin; //0xBC, 0xC0, 0xC4
+	float m_vVelocityX; //0xC8
+	float m_vVelocityY; //0xCC
+	char pad5[4];
+	float m_flUnknownFloat1; //0xD4 Affected by movement and direction
+	char pad6[8];
+	float m_flUnknownFloat2; //0xE0 //from -1 to 1 when moving and affected by direction
+	float m_flUnknownFloat3; //0xE4 //from -1 to 1 when moving and affected by direction
+	float m_unknown; //0xE8
+	float speed_2d; //0xEC
+	float flUpVelocity; //0xF0
+	float m_flSpeedNormalized; //0xF4 //from 0 to 1
+	float m_flFeetSpeedForwardsOrSideWays; //0xF8 //from 0 to 2. something  is 1 when walking, 2.something when running, 0.653 when crouch walking
+	float m_flFeetSpeedUnknownForwardOrSideways; //0xFC //from 0 to 3. something
+	float m_flTimeSinceStartedMoving; //0x100
+	float m_flTimeSinceStoppedMoving; //0x104
+	unsigned char m_bOnGround; //0x108
+	unsigned char m_bInHitGroundAnimation; //0x109
+	char pad7[10];
+	float m_flLastOriginZ; //0x114
+	float m_flHeadHeightOrOffsetFromHittingGroundAnimation; //0x118 from 0 to 1, is 1 when standing
+	float m_flStopToFullRunningFraction; //0x11C from 0 to 1, doesnt change when walking or crouching, only running
+	char pad8[4]; //NaN
+	float m_flUnknownFraction; //0x124 affected while jumping and running, or when just jumping, 0 to 1
+	char pad9[4]; //NaN
+	float m_flUnknown3;
+	char pad10[528];
+	float& m_flAbsRotation( ) {
+		return *(float*)((uintptr_t)this + 0x80);
+	}
+};
+
+
+class CBoneAccessor
+{
+
+public:
+
+	inline matrix3x4_t* GetBoneArrayForWrite( )
+	{
+		return m_pBones;
+	}
+
+	inline void SetBoneArrayForWrite( matrix3x4_t* bone_array )
+	{
+		m_pBones = bone_array;
+	}
+
+	alignas(16) matrix3x4_t* m_pBones;
+	int32_t m_ReadableBones; // Which bones can be read.
+	int32_t m_WritableBones; // Which bones can be written.
+}; 
+
+struct _CrtMemState;
+
+#define MEMALLOC_VERSION 1
+
+typedef size_t( *MemAllocFailHandler_t ) (size_t);
+
+//-----------------------------------------------------------------------------
+// NOTE! This should never be called directly from leaf code
+// Just use new,delete,malloc,free etc. They will call into this eventually
+//-----------------------------------------------------------------------------
+class IMemAlloc
+{
+public:
+	virtual ~IMemAlloc( );
+
+	// Release versions
+	virtual void* Alloc( size_t nSize ) = 0;
+	virtual void* Realloc( void* pMem, size_t nSize ) = 0;
+	virtual void Free( void* pMem ) = 0;
+	virtual void* Expand_NoLongerSupported( void* pMem, size_t nSize ) = 0;
+
+	// Debug versions
+	//virtual void *Alloc(size_t nSize, const char *pFileName, int nLine) = 0;
+	//virtual void *Realloc(void *pMem, size_t nSize, const char *pFileName, int nLine) = 0;
+	//virtual void  Free(void *pMem, const char *pFileName, int nLine) = 0;
+	//virtual void *Expand_NoLongerSupported(void *pMem, size_t nSize, const char *pFileName, int nLine) = 0;
+
+	// Returns size of a particular allocation
+	virtual size_t GetSize( void* pMem ) = 0;
+
+	// Force file + line information for an allocation
+	virtual void PushAllocDbgInfo( const char* pFileName, int nLine ) = 0;
+	virtual void PopAllocDbgInfo( ) = 0;
+
+	// FIXME: Remove when we have our own allocator
+	// these methods of the Crt debug code is used in our codebase currently
+	virtual long CrtSetBreakAlloc( long lNewBreakAlloc ) = 0;
+	virtual int CrtSetReportMode( int nReportType, int nReportMode ) = 0;
+	virtual int CrtIsValidHeapPointer( const void* pMem ) = 0;
+	virtual int CrtIsValidPointer( const void* pMem, unsigned int size, int access ) = 0;
+	virtual int CrtCheckMemory( void ) = 0;
+	virtual int CrtSetDbgFlag( int nNewFlag ) = 0;
+	virtual void CrtMemCheckpoint( _CrtMemState* pState ) = 0;
+
+	// FIXME: Make a better stats interface
+	virtual void DumpStats( ) = 0;
+	virtual void DumpStatsFileBase( char const* pchFileBase ) = 0;
+
+	// FIXME: Remove when we have our own allocator
+	virtual void* CrtSetReportFile( int nRptType, void* hFile ) = 0;
+	virtual void* CrtSetReportHook( void* pfnNewHook ) = 0;
+	virtual int CrtDbgReport( int nRptType, const char* szFile,
+		int nLine, const char* szModule, const char* pMsg ) = 0;
+
+	virtual int heapchk( ) = 0;
+
+	virtual bool IsDebugHeap( ) = 0;
+
+	virtual void GetActualDbgInfo( const char*& pFileName, int& nLine ) = 0;
+	virtual void RegisterAllocation( const char* pFileName, int nLine, int nLogicalSize, int nActualSize, unsigned nTime ) = 0;
+	virtual void RegisterDeallocation( const char* pFileName, int nLine, int nLogicalSize, int nActualSize, unsigned nTime ) = 0;
+
+	virtual int GetVersion( ) = 0;
+
+	virtual void CompactHeap( ) = 0;
+
+	// Function called when malloc fails or memory limits hit to attempt to free up memory (can come in any thread)
+	virtual MemAllocFailHandler_t SetAllocFailHandler( MemAllocFailHandler_t pfnMemAllocFailHandler ) = 0;
+
+	virtual void DumpBlockStats( void* ) = 0;
+
+#if defined( _MEMTEST )
+	virtual void SetStatsExtraInfo( const char* pMapName, const char* pComment ) = 0;
+#endif
+
+	// Returns 0 if no failure, otherwise the size_t of the last requested chunk
+	//  "I'm sure this is completely thread safe!" Brian Deen 7/19/2012.
+	virtual size_t MemoryAllocFailed( ) = 0;
+
+	// handles storing allocation info for coroutines
+	virtual int GetDebugInfoSize( ) = 0;
+	virtual void SaveDebugInfo( void* pvDebugInfo ) = 0;
+	virtual void RestoreDebugInfo( const void* pvDebugInfo ) = 0;
+	virtual void InitDebugInfo( void* pvDebugInfo, const char* pchRootFileName, int nLine ) = 0;
+
+	// Replacement for ::GlobalMemoryStatus which accounts for unused memory in our system
+	virtual void GlobalMemoryStatus( size_t* pUsedMemory, size_t* pFreeMemory ) = 0;
+}; extern IMemAlloc* g_pMemAlloc;
+
 
 // class predefinition
 class C_BaseCombatWeapon;
@@ -126,10 +330,9 @@ public:
 		Utils::GetVFunc<void(__thiscall*)(void*)>(this, 223)(this);
 	}
 
-	void ClientAnimations(bool value)
+	bool& ClientAnimations( )
 	{
-		static int m_bClientSideAnimation = g_pNetvars->GetOffset("DT_BaseAnimating", "m_bClientSideAnimation");
-		*reinterpret_cast<bool*>(uintptr_t(this) + m_bClientSideAnimation) = value;
+		return *reinterpret_cast<bool*>(uintptr_t( this ) + g_pNetvars->GetOffset( "DT_BaseAnimating", "m_bClientSideAnimation" ));
 	}
 
 	int GetSequence()
@@ -152,10 +355,138 @@ public:
 
 	void SetAbsAngles(Vector angles);
 	void SetAbsOrigin(Vector origin);
+	
+	AnimationLayer* GetAnimOverlays( )
+	{
+		return *(AnimationLayer**)((DWORD)this + 0x2990);
+	}
+
+	uint32_t& GetMostRecentModelBoneCounter( ) // for fake matrix
+	{
+		return *reinterpret_cast<uint32_t*>(uintptr_t( this ) + 0x2690);
+	}
+	float& GetLastBoneSetupTime( ) // for fake matrix
+	{
+		return *reinterpret_cast<float*>(uintptr_t( this ) + 0x2924);
+	}
+
+	void create_animation_state( CBasePlayerAnimState* state )
+	{
+		using create_anim_state_t = void( __thiscall* ) (CBasePlayerAnimState*, C_BaseEntity*);
+		static auto create_anim_state = reinterpret_cast<create_anim_state_t> (Utils::FindSignature( "client_panorama.dll", "55 8B EC 56 8B F1 B9 ? ? ? ? C7 46" ));
+
+		if (!create_anim_state)
+			return;
+
+		create_anim_state( state, this );
+	}
+
+	float_t m_flSpawnTime( )
+	{
+		return *(float_t*)((uintptr_t)this + 0xA360);
+	}
+
+	void UpdateAnimationState( CBasePlayerAnimState* state, Vector angle )
+	{
+		static auto update_anim_state = Utils::PatternScan( GetModuleHandleA( "client_panorama.dll" ), "55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3 0F 11 54 24" );
+
+		if (!update_anim_state)
+			return;
+
+		__asm
+		{
+			push 0
+		}
+
+		__asm
+		{
+			mov ecx, state
+
+			movss xmm1, dword ptr[angle + 4]
+			movss xmm2, dword ptr[angle]
+
+			call update_anim_state
+		}
+	}
+
+
+	std::array< float, 24 >& m_flPoseParameter( )
+	{
+		static int _m_flPoseParameter = g_pNetvars->GetOffset( "DT_BaseAnimating", "m_flPoseParameter" );
+		return *reinterpret_cast<std::array<float, 24>*>(reinterpret_cast<uintptr_t>(this) + _m_flPoseParameter);
+	}
+
+	CBasePlayerAnimState* GetPlayerAnimState( )
+	{
+		return *(CBasePlayerAnimState**)((DWORD)this + 0x3900);
+	}
+
+	template<typename FuncType>
+	__forceinline static FuncType CallVFunction( void* ppClass, int index )
+	{
+		int* pVTable = *(int**)ppClass;
+		int dwAddress = pVTable[index];
+		return (FuncType)(dwAddress);
+	}
+
+	
+
+	datamap_t* GetPredDescMap( ) {
+		typedef datamap_t* (__thiscall* o_GetPredDescMap)(void*);
+		return CallVFunction<o_GetPredDescMap>( this, 17 )(this);
+	}
+	offset( get_ik_context( ), IKContext*, 9836 + 0x4 );
+
+	Vector& GetAbsAngles( )
+	{
+		if (!this)
+			return Vector( );
+		typedef Vector& (__thiscall* OriginalFn)(void*);
+		return CallVFunction<OriginalFn>( this, 11 )(this);
+	}
+
+	void StandardBlendingRules( studiohdr_t* hdr, Vector* pos, quaternion* q, float_t curtime, int32_t boneMask )
+	{
+		typedef void( __thiscall* o_StandardBlendingRules )(void*, studiohdr_t*, Vector*, quaternion*, float_t, int32_t);
+		CallVFunction<o_StandardBlendingRules>( this, 205 )(this, hdr, pos, q, curtime, boneMask);
+	}
+	vfunc( 191, update_ik_locks( float curtime ), void( __thiscall* )(void*, float) )(curtime)
+	vfunc( 192, calculate_ik_locks( float curtime ), void( __thiscall* )(void*, float) )(curtime)
+
+	void BuildTransformations( studiohdr_t* hdr, Vector* pos, quaternion* q, const matrix3x4_t& cameraTransform, int32_t boneMask, byte* computed )
+	{
+		typedef void( __thiscall* o_BuildTransformations )(void*, studiohdr_t*, Vector*, quaternion*, const matrix3x4_t&, int32_t, byte*);
+		CallVFunction<o_BuildTransformations>( this, 189 )(this, hdr, pos, q, cameraTransform, boneMask, computed);
+	}
+
+	int& get_effects( )
+	{
+		static unsigned int _m_iEFlags = Utils::FindInDataMap( GetPredDescMap( ), "m_fEffects" );
+		return *(int*)((uintptr_t)this + _m_iEFlags);
+	}
+
+	void InvalidateBoneCache( )
+	{
+		static auto invalidate_bone_bache = Utils::FindSignature( "client_panorama.dll", "80 3D ? ? ? ? ? 74 16 A1 ? ? ? ? 48 C7 81" ) + 10;
+
+		*(std::uint32_t*) ((std::uintptr_t) this + 0x2924) = 0xFF7FFFFF;
+		*(std::uint32_t*) ((std::uintptr_t) this + 0x2690) = **(std::uintptr_t**) invalidate_bone_bache - 1;
+	}
+
+	offset( get_bone_cache_count( ), int, 0x2910 + 0xC )
+	matrix3x4_t* get_bone_array_for_write( ) {
+		return *(matrix3x4_t**)((uintptr_t)this + 0x26A8);
+	}
 
 	Vector GetAbsOrigin()
 	{
 		return Utils::GetVFunc<Vector&(__thiscall*)(void*)>(this, 10)(this);
+	}
+
+	Vector& m_vecAbsVelocity( )
+	{
+		static unsigned int _m_vecAbsVelocity = Utils::FindInDataMap( GetPredDescMap( ), "m_vecAbsVelocity" );
+		return *(Vector*)((uintptr_t)this + _m_vecAbsVelocity);
 	}
 
 	void SetAbsVelocity(Vector velocity);
@@ -191,6 +522,12 @@ public:
         return GetValue<MoveType_t>(m_Movetype);
     }
 
+	uint32_t& m_iEFlags( )
+	{
+		static unsigned int _m_iEFlags = Utils::FindInDataMap( GetPredDescMap( ), "m_iEFlags" );
+		return *(uint32_t*)((uintptr_t)this + _m_iEFlags);
+	}
+
 	float GetSimulationTime()
 	{
 		static int m_flSimulationTime = g_pNetvars->GetOffset("DT_BaseEntity", "m_flSimulationTime");
@@ -213,6 +550,17 @@ public:
 	{
 		static int m_flLowerBodyYawTarget = g_pNetvars->GetOffset("DT_CSPlayer", "m_flLowerBodyYawTarget");
 		*reinterpret_cast<float*>(uintptr_t(this) + m_flLowerBodyYawTarget) = value;
+	}
+
+	//new for anifix
+	studiohdr_t* GetModelPtr( )
+	{
+		return *(studiohdr_t**)((uintptr_t)this + 0x294C);
+	}
+
+	CBoneAccessor* GetBoneAccessor( )
+	{
+		return (CBoneAccessor*)((uintptr_t)this + 0x26A8);
 	}
 
 	bool GetHeavyArmor()

@@ -5,10 +5,96 @@
 #include "..\..\valve_sdk\PlayerInfo.h"
 #include "..\..\valve_utils\Math.h"
 #include "..\..\gui\menu_system.h"
+#include <array>
+#include "../../valve_sdk/ICvar.h"
+#include "../Aimbot/LagComp.h"
 
 AntiAim g_AntiAim;
 
 bool Swtich = false;
+
+bool m_should_update_fake = false;
+std::array< AnimationLayer, 15 > m_fake_layers; // 13
+std::array< float, 24 > m_fake_poses; // 20
+CBasePlayerAnimState* m_fake_state = nullptr;
+bool init_fake_anim = false;
+float m_fake_spawntime = 0.f;
+matrix3x4_t m_fake_position_matrix[128];
+
+
+void AntiAim::desyncchams( )
+{
+	if (!g::pLocalEntity || !g::pLocalEntity->IsAlive( )) {
+		m_should_update_fake = true;
+		return;
+	}
+
+	if (m_fake_spawntime != g::pLocalEntity->m_flSpawnTime( ) || m_should_update_fake)
+	{
+		init_fake_anim = false;
+		m_fake_spawntime = g::pLocalEntity->m_flSpawnTime( );
+		m_should_update_fake = false;
+	}
+
+	if (!init_fake_anim)
+	{
+		m_fake_state = reinterpret_cast<CBasePlayerAnimState*> (g_pMemAlloc->Alloc( sizeof( CBasePlayerAnimState ) ));
+
+		if (m_fake_state != nullptr)
+			g::pLocalEntity->create_animation_state( m_fake_state );
+
+		init_fake_anim = true;
+	}
+
+	if (g::bSendPacket)
+	{
+		int OldFrameCount = g_pGlobalVars->framecount;
+		int OldTickCount = g_pGlobalVars->tickcount;
+		static auto host_timescale = g_pCvar->FindVar( ("host_timescale") );
+
+		g_pGlobalVars->framecount = TIME_TO_TICKS( g::pLocalEntity->GetSimulationTime( ) );
+		g_pGlobalVars->tickcount = TIME_TO_TICKS( g::pLocalEntity->GetSimulationTime( ) );
+
+		std::memcpy( m_fake_layers.data( ), g::pLocalEntity->GetAnimOverlays( ), sizeof( m_fake_layers ) );
+		std::memcpy( m_fake_poses.data( ), g::pLocalEntity->m_flPoseParameter( ).data( ), sizeof( m_fake_poses ) );
+
+		g::pLocalEntity->UpdateAnimationState( m_fake_state, g::pCmd->viewangles );
+
+		const auto backup_absangles = g::pLocalEntity->GetAbsAngles( );
+
+		/* invalidate bone cache */
+		g::pLocalEntity->GetMostRecentModelBoneCounter( ) = 0;
+		g::pLocalEntity->GetLastBoneSetupTime( ) = -FLT_MAX;
+
+		g::m_got_fake_matrix = g::pLocalEntity->SetupBones( g::m_fake_matrix, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING & ~BONE_USED_BY_ATTACHMENT, g_pGlobalVars->curtime );
+
+		memcpy( m_fake_position_matrix, g::m_fake_matrix, sizeof( m_fake_position_matrix ) );
+
+		const auto org_tmp = g::pLocalEntity->GetRenderOrigin( );
+
+		if (g::m_got_fake_matrix)
+		{
+			for (auto& i : g::m_fake_matrix)
+			{
+				i[0][3] -= org_tmp.x;
+				i[1][3] -= org_tmp.y;
+				i[2][3] -= org_tmp.z;
+			}
+		}
+
+		g::pLocalEntity->SetAbsAngles( backup_absangles ); // restore real abs rotation
+
+		/* invalidate bone cache */
+		g::pLocalEntity->GetMostRecentModelBoneCounter( ) = 0;
+		g::pLocalEntity->GetLastBoneSetupTime( ) = -FLT_MAX;
+
+		std::memcpy( g::pLocalEntity->GetAnimOverlays( ), m_fake_layers.data( ), sizeof( m_fake_layers ) );
+		std::memcpy( g::pLocalEntity->m_flPoseParameter( ).data( ), m_fake_poses.data( ), sizeof( m_fake_poses ) );
+
+		g_pGlobalVars->framecount = OldFrameCount;
+		g_pGlobalVars->tickcount = OldTickCount;
+	}
+}
 
 void FreeStanding() // cancer v1
 {

@@ -15,6 +15,29 @@
 #include "..\..\valve_sdk\Hitboxes.h"
 #include <deque>
 
+enum HitboxList
+{
+	Head = 0,
+	Neck,
+	Pelvis,
+	Stomach,
+	LowerChest,
+	Chest,
+	UpperChest,
+	RightThigh,
+	LeftThigh,
+	RightShin,
+	LeftShin,
+	RightFoot,
+	LeftFoot,
+	RightHand,
+	LeftHand,
+	RightUpperArm,
+	RightLowerArm,
+	LeftUpperArm,
+	LeftLowerArm
+};
+
 class c_aimbot
 {
 public:
