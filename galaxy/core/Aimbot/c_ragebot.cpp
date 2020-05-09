@@ -289,7 +289,7 @@ void c_aimbot::OnCreateMove( )
 		if (galaxy_vars.cfg.FixShotPitch) // ik it dosnt realy fix much just makes ur pitch go down faster
 		{
 			g::bSendPacket = true;
-			g_AntiAim.OnCreateMove( );
+			antiaim.create_move( );
 		}
 		shot = false;
 	}

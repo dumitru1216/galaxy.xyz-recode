@@ -3,6 +3,7 @@
 #include "IClientUnknown.h"
 #include "IClientEntityList.h"
 #include "CInput.h"
+
 #include "..\valve_utils\Utils.h"
 #include "IVModelInfo.h"
 #include "..\valve_utils\NetvarManager.h"
@@ -459,6 +460,9 @@ public:
 		CallVFunction<o_BuildTransformations>( this, 189 )(this, hdr, pos, q, cameraTransform, boneMask, computed);
 	}
 
+	
+
+
 	int& get_effects( )
 	{
 		static unsigned int _m_iEFlags = Utils::FindInDataMap( GetPredDescMap( ), "m_fEffects" );
@@ -472,6 +476,8 @@ public:
 		*(std::uint32_t*) ((std::uintptr_t) this + 0x2924) = 0xFF7FFFFF;
 		*(std::uint32_t*) ((std::uintptr_t) this + 0x2690) = **(std::uintptr_t**) invalidate_bone_bache - 1;
 	}
+
+	float MaxDesyncDelta( );
 
 	offset( get_bone_cache_count( ), int, 0x2910 + 0xC )
 	matrix3x4_t* get_bone_array_for_write( ) {

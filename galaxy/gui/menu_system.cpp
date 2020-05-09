@@ -197,7 +197,17 @@ void rage_tab( ) {
 
 	ImGui::BeginChild( "ragebot [ anti-aim ]", ImVec2( 289, 201 ), true );
 	{
+		const char* antiaim_deysnc_yaw[] = { "off", "backwars", "static desync" };
+
 		ImGui::Checkbox( "enable anti-aim", &galaxy_vars.cfg.Antiaim );
+		ImGui::Combo( "yaw/desync", &galaxy_vars.cfg.yaw_desync, antiaim_deysnc_yaw, IM_ARRAYSIZE(antiaim_deysnc_yaw) );
+		if (galaxy_vars.cfg.yaw_desync == 2)
+		{
+			ImGui::Hotkey( "desync swap", &galaxy_vars.cfg.desync_swap, ImVec2(30, 40) );
+			ImGui::SliderInt( "body lean", &galaxy_vars.cfg.body_lean, 0, 300, "%.f%%" );
+			ImGui::SliderInt( "body invert", &galaxy_vars.cfg.body_invert, 0, 300, "%.f%%" );
+		}
+		ImGui::SliderInt( "fakelag ticks", &galaxy_vars.cfg.Fakelag, 0, 15, "%.f%%" );
 	}
 	ImGui::EndChild( true );
 
@@ -290,12 +300,29 @@ void visuals_tab( ) {
 			ImGui::ColorEdit4( "###localcamsoveride", galaxy_vars.cfg.local_overide_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
 			ImGui::Combo( "local materials [ overide ]", &galaxy_vars.cfg.local_overide_materials, chams_material, IM_ARRAYSIZE( chams_material ) );
 
-			ImGui::Checkbox( "desyncchas", &galaxy_vars.cfg.desync_chams );
+			ImGui::Checkbox( "desync chams", &galaxy_vars.cfg.desync_chams );
+			ImGui::SameLine( );
+			ImGui::ColorEdit4( "###desyncncamayte", galaxy_vars.cfg.desync_chams_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+			ImGui::Combo( "desync materials [ normal ]", &galaxy_vars.cfg.desync_chams_material, chams_material, IM_ARRAYSIZE( chams_material ) );
+			ImGui::Checkbox( "desync chams overide", &galaxy_vars.cfg.deysnc_Overid );
+			ImGui::SameLine( );
+			ImGui::ColorEdit4( "###desocverdidechams", galaxy_vars.cfg.desync_chams_overide, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+			ImGui::Combo( "desync materials [ overide ]", &galaxy_vars.cfg.desync_chams_overide_material, chams_material, IM_ARRAYSIZE( chams_material ) );
+
 
 		}
 
 		if (chams_sub == 2)
 		{
+			ImGui::Checkbox( "hand chams", &galaxy_vars.cfg.hand_chams );
+			ImGui::SameLine( );
+			ImGui::ColorEdit4( "###handnormalcaolor", galaxy_vars.cfg.hand_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+			ImGui::Combo( "hand materials [ normal ]", &galaxy_vars.cfg.hand_materials, chams_material, IM_ARRAYSIZE( chams_material ) );
+			ImGui::Checkbox( "hand chams overide", &galaxy_vars.cfg.hand_chams_overide );
+			ImGui::SameLine( );
+			ImGui::ColorEdit4( "###handoveridecolor", galaxy_vars.cfg.hand_overide_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+			ImGui::Combo( "hand materials [ overide ]", &galaxy_vars.cfg.hand_materials_overide, chams_material, IM_ARRAYSIZE( chams_material ) );
+
 
 		}
 
@@ -350,17 +377,22 @@ void misc_tab( ) {
 
 	ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, ImVec2( 16, 16 ) );
 
-	ImGui::BeginChild( "main 1", ImVec2( 269, 361 ), true );
+	ImGui::BeginChild( "misc [ movement ]", ImVec2( 269, 361 ), true );
 	{
-	
+		ImGui::Checkbox( "automatic bhop", &galaxy_vars.cfg.Bhop );
+		ImGui::Checkbox( "automatic strafe", &galaxy_vars.cfg.AutoStrafe );
 	}
 	ImGui::EndChild( true );
 	ImGui::NextColumn( );
 	ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) - 9 );
 
-	ImGui::BeginChild( "main 2", ImVec2( 289, 152 ), true );
+	ImGui::BeginChild( "misc [ other ]", ImVec2( 289, 152 ), true );
 	{
-
+		ImGui::Checkbox( "slowwalk", &galaxy_vars.cfg.slowwalk );
+		if (galaxy_vars.cfg.slowwalk)
+		{
+			ImGui::SliderInt( "slowwalk speed", &galaxy_vars.cfg.slowspeed, 0, 100, "%.f%%" );
+		}
 	}
 	ImGui::EndChild( true );
 
@@ -369,9 +401,14 @@ void misc_tab( ) {
 	ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) - 9 );
 	ImGui::SetCursorPosY( ImGui::GetCursorPosY( ) - 7 );
 
-	ImGui::BeginChild( "main 3", ImVec2( 289, 201 ), true );
+	ImGui::BeginChild( "misc [ premium ]", ImVec2( 289, 201 ), true );
 	{
-
+		ImGui::Checkbox( "airstuck exploit", &galaxy_vars.cfg.air_stuck );
+		if (galaxy_vars.cfg.air_stuck)
+		{
+			ImGui::Hotkey( "airstuck key", &galaxy_vars.cfg.air_key, ImVec2( 30, 40 ) );
+		}
+		ImGui::Checkbox( "air desync exploit", &galaxy_vars.cfg.air_desync );
 	}
 	ImGui::EndChild( true );
 

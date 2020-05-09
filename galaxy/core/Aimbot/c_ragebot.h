@@ -4,7 +4,7 @@
 #include "../../valve_sdk/IVModelInfo.h"
 #include "Autowall.h"
 #include "LagComp.h"
-#include "..\AntiAim\AntiAim.h"
+#include "..\AntiAim\c_antiaim.h"
 #include "..\..\valve_utils\Utils.h"
 #include "..\..\valve_sdk\IVEngineClient.h"
 #include "..\..\valve_sdk\PlayerInfo.h"

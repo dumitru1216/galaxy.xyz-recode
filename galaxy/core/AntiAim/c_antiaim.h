@@ -2,13 +2,12 @@
 #include "..\..\valve_utils\GlobalVars.h"
 #include "..\..\valve_sdk\CGlobalVarsBase.h"
 
-class AntiAim
+class c_antiaim
 {
 public:
-	void OnCreateMove();
-
+	void create_move();
 	void desyncchams();
-private:
-
+	void yaw_desync( );
+	void smallmovements( );
 };
-extern AntiAim g_AntiAim;
+extern c_antiaim antiaim;

@@ -24,7 +24,7 @@ namespace vtable_indexes
 	constexpr auto lockCursor   = 67;
 	constexpr auto frameStage   = 37;
 	constexpr auto dme          = 21;
-	constexpr auto extraBonePro	= 192;
+	constexpr auto extraBonePro	= 197;
 	constexpr auto sceneEnd     = 9;
 	constexpr auto end_scene = 42;
 	constexpr auto end_scene_reset = 16;
@@ -55,7 +55,7 @@ public:
 	static void table_functions( );
 	static void wnd_hook( );
     static void Restore();
-
+	static void HookPlayers( );
 
 
     /*---------------------------------------------*/

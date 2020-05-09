@@ -37,6 +37,26 @@ public:
 		bool BaimPitch;
 		bool BaimInAir;
 
+		bool server_hitobx;
+
+		//slowwalk
+		int slowspeed;
+		bool slowwalk;
+
+		//antiaim`
+		int yaw_desync;
+		int desync_swap;
+		int body_lean;
+
+		bool local_trails; 
+
+		int body_invert;
+
+		int air_key;
+		bool air_stuck;
+
+		bool air_desync;
+
 		// - hitbox - //
 		bool head;
 		bool body;

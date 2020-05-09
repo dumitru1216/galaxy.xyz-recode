@@ -55,6 +55,7 @@ void c_hooks::Init()
 	vmt_hooks( );
 	table_functions( );
 	g_Event.Init();
+	HookPlayers( );
 	c_hooking->init_fonts( );
 
     Utils::Log("Hooking completed!");

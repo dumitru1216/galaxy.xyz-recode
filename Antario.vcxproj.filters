@@ -60,9 +60,6 @@
     <ClCompile Include="galaxy\core\Aimbot\LagComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="galaxy\core\AntiAim\AntiAim.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="galaxy\core\Legit\Legitbot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -120,6 +117,15 @@
     <ClCompile Include="galaxy\core\Animations System\animation_system.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="galaxy\core\AntiAim\c_antiaim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\core\Premium\exploits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\core\Premium\premium_stuff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="galaxy\hooking_mode\hooking_init.h">
@@ -135,9 +141,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="galaxy\core\Aimbot\LagComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="galaxy\core\AntiAim\AntiAim.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="galaxy\core\Legit\Legitbot.h">
@@ -324,6 +327,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="galaxy\valve_sdk\datamap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\core\AntiAim\c_antiaim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\core\Premium\exploits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\core\Premium\premium_stuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

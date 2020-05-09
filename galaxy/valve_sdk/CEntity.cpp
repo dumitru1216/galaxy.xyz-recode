@@ -111,7 +111,7 @@ bool C_BaseEntity::IsKnifeorNade()
 
 	std::string WeaponName = pWeapon->GetName();
 
-	if (WeaponName == "weapon_knife")
+	if (WeaponName == "weapon_knifealau")
 		return true;
 	else if (WeaponName == "weapon_incgrenade")
 		return true;

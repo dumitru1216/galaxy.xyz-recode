@@ -24,16 +24,18 @@ bool __fastcall c_hooks::CreateMove( IClientMode* thisptr, void* edx, float samp
 	g_Misc.OnCreateMove( );
 	g_Resolver.OnCreateMove( );
 	engine_prediction::RunEnginePred( );
-	g_AntiAim.OnCreateMove( );
+	antiaim.create_move( );
+	antiaim.smallmovements( );
 	aimbot.OnCreateMove( );
 	g_Legitbot.OnCreateMove( );
+	exploit.create_move( );
 	engine_prediction::EndEnginePred( );
-	g_Misc.MovementFix( g::OriginalView );
+	g_Misc.MovementFix( g::pCmd, g::OriginalView );
 	g_Math.Clamp( g::pCmd->viewangles );
 
 	if (g::bSendPacket)
 		g::RealAngle = g::pCmd->viewangles;
-	g_AntiAim.desyncchams( );
+	antiaim.desyncchams( );
 	*(bool*)(*framePtr - 0x1C) = g::bSendPacket;
 
 	g::pCmd->buttons |= IN_BULLRUSH; // hehe

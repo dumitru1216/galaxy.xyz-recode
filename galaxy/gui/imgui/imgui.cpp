@@ -8093,41 +8093,44 @@ bool ImGui::InputInt3( const char* label, int v[ 3 ], ImGuiInputTextFlags extra_
 bool ImGui::InputInt4( const char* label, int v[ 4 ], ImGuiInputTextFlags extra_flags ) {
 	return InputIntN( label, v, 4, extra_flags );
 }
+#include <chrono>
 
 bool ImGui::Hotkey( const char* label, int* k, const ImVec2& size_arg ) {
+	ImGui::SetCursorPosX( ImGui::GetCursorPosX( ) + 10 );
+
 	ImGuiWindow* window = GetCurrentWindow( );
-	if ( window->SkipItems )
+	if (window->SkipItems)
 		return false;
 
 	ImGuiContext& g = *GImGui;
-	ImGuiIO& io = g.IO;
+	ImGuiIO& io = g.IO; //aaaaaaaa
 	const ImGuiStyle& style = g.Style;
 
 	const ImGuiID id = window->GetID( label );
 	const ImVec2 label_size = CalcTextSize( label, NULL, true );
-	ImVec2 size = CalcItemSize( size_arg, CalcItemWidth( ), label_size.y + style.FramePadding.y*2.0f );
-	const ImRect frame_bb( window->DC.CursorPos + ImVec2( label_size.x + style.ItemInnerSpacing.x, 0.0f ), window->DC.CursorPos + size );
+	ImVec2 size = ImVec2( 116, 18 );
+	const ImRect frame_bb( window->DC.CursorPos + ImVec2( label_size.x + style.ItemInnerSpacing.x + 0.f, 0.0f ), window->DC.CursorPos + size );
 	const ImRect total_bb( window->DC.CursorPos, frame_bb.Max );
 
 	ItemSize( total_bb, style.FramePadding.y );
-	if ( !ItemAdd( total_bb, &id ) )
+	if (!ItemAdd( total_bb, &id ))
 		return false;
 
 	const bool focus_requested = FocusableItemRegister( window, g.ActiveId == id, false );
-	const bool focus_requested_by_code = focus_requested && ( window->FocusIdxAllCounter == window->FocusIdxAllRequestCurrent );
+	const bool focus_requested_by_code = focus_requested && (window->FocusIdxAllCounter == window->FocusIdxAllRequestCurrent);
 	const bool focus_requested_by_tab = focus_requested && !focus_requested_by_code;
 
 	const bool hovered = IsHovered( frame_bb, id );
 
-	if ( hovered ) {
+	if (hovered) {
 		SetHoveredID( id );
 		g.MouseCursor = ImGuiMouseCursor_TextInput;
 	}
 
-	const bool user_clicked = hovered && io.MouseClicked[ 0 ];
+	const bool user_clicked = hovered && io.MouseClicked[0];
 
-	if ( focus_requested || user_clicked ) {
-		if ( g.ActiveId != id ) {
+	if (focus_requested || user_clicked) {
+		if (g.ActiveId != id) {
 			memset( io.MouseDown, 0, sizeof( io.MouseDown ) );
 			memset( io.KeysDown, 0, sizeof( io.KeysDown ) );
 			*k = 0;
@@ -8135,18 +8138,18 @@ bool ImGui::Hotkey( const char* label, int* k, const ImVec2& size_arg ) {
 		SetActiveID( id, window );
 		FocusWindow( window );
 	}
-	else if ( io.MouseClicked[ 0 ] ) {
-		if ( g.ActiveId == id )
+	else if (io.MouseClicked[0]) {
+		if (g.ActiveId == id)
 			ClearActiveID( );
 	}
 
 	bool value_changed = false;
 	int key = *k;
 
-	if ( g.ActiveId == id ) {
-		for ( auto i = 0; i < 5; i++ ) {
-			if ( io.MouseDown[ i ] ) {
-				switch ( i ) {
+	if (g.ActiveId == id) {
+		for (auto i = 0; i < 5; i++) {
+			if (io.MouseDown[i]) {
+				switch (i) {
 				case 0:
 					key = VK_LBUTTON;
 					break;
@@ -8167,9 +8170,9 @@ bool ImGui::Hotkey( const char* label, int* k, const ImVec2& size_arg ) {
 				ClearActiveID( );
 			}
 		}
-		if ( !value_changed ) {
-			for ( auto i = VK_BACK; i <= VK_RMENU; i++ ) {
-				if ( io.KeysDown[ i ] ) {
+		if (!value_changed) {
+			for (auto i = VK_BACK; i <= VK_RMENU; i++) {
+				if (io.KeysDown[i]) {
 					key = i;
 					value_changed = true;
 					ClearActiveID( );
@@ -8177,7 +8180,7 @@ bool ImGui::Hotkey( const char* label, int* k, const ImVec2& size_arg ) {
 			}
 		}
 
-		if ( IsKeyPressedMap( ImGuiKey_Escape ) ) {
+		if (IsKeyPressedMap( ImGuiKey_Escape )) {
 			*k = 0;
 			ClearActiveID( );
 		}
@@ -8186,18 +8189,32 @@ bool ImGui::Hotkey( const char* label, int* k, const ImVec2& size_arg ) {
 		}
 	}
 
+	long currentTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now( ).time_since_epoch( )).count( );
+	static long timeStamp = currentTime_ms;
+
+	timeStamp = currentTime_ms / 500;
+
+	const char* change = "";
+	switch (timeStamp % 2) {
+	case 0:change = "press a key"; break;
+	case 1:change = ""; break;
+
+	}
+
 	// Render
 	// Select which buffer we are going to display. When ImGuiInputTextFlags_NoLiveEdit is Set 'buf' might still be the old value. We Set buf to NULL to prevent accidental usage from now on.
 
-	char buf_display[ 64 ] = "None";
+	char buf_display[64] = "none";
 
 	RenderFrame( frame_bb.Min, frame_bb.Max, GetColorU32( ImGuiCol_FrameBg ), true, style.FrameRounding );
+	window->DrawList->AddRectFilled( frame_bb.Min - ImVec2( 1, 1 ), frame_bb.Max + ImVec2( 1, 1 ), GetColorU32( ImVec4( 0 / 255.f, 0 / 255.f, 0 / 255.f, 0.1f ) ), style.FrameRounding );
+	window->DrawList->AddRectFilled( frame_bb.Min, frame_bb.Max, GetColorU32( ImGuiCol_FrameBg ), style.FrameRounding );
 
-	if ( *k != 0 && g.ActiveId != id ) {
-		strcpy( buf_display, KeyNames[ *k ] );
+	if (*k != 0 && g.ActiveId != id) {
+		strcpy( buf_display, KeyNames[*k] );
 	}
-	else if ( g.ActiveId == id ) {
-		strcpy( buf_display, "<Press a key>" );
+	else if (g.ActiveId == id) {
+		strcpy( buf_display, change );
 	}
 
 	const ImRect clip_rect( frame_bb.Min.x, frame_bb.Min.y, frame_bb.Min.x + size.x, frame_bb.Min.y + size.y ); // Not using frame_bb.Max because we have adjusted size
@@ -8205,7 +8222,7 @@ bool ImGui::Hotkey( const char* label, int* k, const ImVec2& size_arg ) {
 	RenderTextClipped( frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding, buf_display, NULL, NULL );
 	//draw_window->DrawList->AddText(g.Font, g.FontSize, render_pos, GetColorU32(ImGuiCol_Text), buf_display, NULL, 0.0f, &clip_rect);
 
-	if ( label_size.x > 0 )
+	if (label_size.x > 0)
 		RenderText( ImVec2( total_bb.Min.x, frame_bb.Min.y + style.FramePadding.y ), label );
 
 	return value_changed;

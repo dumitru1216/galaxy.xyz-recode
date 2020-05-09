@@ -162,6 +162,7 @@ bool animations_system::setup_bones( C_BaseEntity* target, int boneMask, float c
 	memcpy( pBoneToWorldOut, bone_out, sizeof( matrix3x4_t[128] ) );
 	return ret;
 }
+
 void animations_system::build_matrix( C_BaseEntity* pl, matrix3x4_t mat[128] ) {
 	/* backup necessary information */
 	const auto backup_frametime = g_pGlobalVars->frametime;

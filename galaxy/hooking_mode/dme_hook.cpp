@@ -43,6 +43,12 @@ void __fastcall c_hooks::DrawModelExecute( void* ecx, void* edx, IMatRenderConte
 
 	//desync
 	static IMaterial* desync_material;
+	static IMaterial* desync_overide;
+
+	//hands
+	static IMaterial* hand_normal;
+	static IMaterial* hand_overide;
+
 
 	glowOverlay = g_pMaterialSys->FindMaterial( "glowOverlay.vmt", TEXTURE_GROUP_OTHER );
 	materialRegular = g_pMaterialSys->FindMaterial( "textured_virt", TEXTURE_GROUP_MODEL );
@@ -128,6 +134,54 @@ void __fastcall c_hooks::DrawModelExecute( void* ecx, void* edx, IMatRenderConte
 		break;
 		//---------------------------------
 	}
+	//desync overide
+	switch (galaxy_vars.cfg.desync_chams_overide_material)
+	{
+	case 0:
+		desync_overide = materialRegular;
+		break;
+		//---------------------------------
+	case 1:
+		desync_overide = glowOverlay;
+		break;
+		//---------------------------------
+	case 2:
+		desync_overide = rifk_glow;
+		break;
+		//---------------------------------
+	}
+	//hand normal
+	switch (galaxy_vars.cfg.hand_materials)
+	{
+	case 0:
+		hand_normal = materialRegular;
+		break;
+		//---------------------------------
+	case 1:
+		hand_normal = glowOverlay;
+		break;
+		//---------------------------------
+	case 2:
+		hand_normal = rifk_glow;
+		break;
+		//---------------------------------
+	}
+	//hand overide
+	switch (galaxy_vars.cfg.hand_materials_overide)
+	{
+	case 0:
+		hand_overide = materialRegular;
+		break;
+		//---------------------------------
+	case 1:
+		hand_overide = glowOverlay;
+		break;
+		//---------------------------------
+	case 2:
+		hand_overide = rifk_glow;
+		break;
+		//---------------------------------
+	}
 
 	//entity modelname
 	if (pPlayerEntity && strstr( ModelName, "models/player" ))
@@ -143,7 +197,6 @@ void __fastcall c_hooks::DrawModelExecute( void* ecx, void* edx, IMatRenderConte
 						i[1][3] += info.origin.y;
 						i[2][3] += info.origin.z;
 					}
-					// visible
 					{
 
 						desync_material->SetMaterialVarFlag( MATERIAL_VAR_IGNOREZ, false );
@@ -151,13 +204,13 @@ void __fastcall c_hooks::DrawModelExecute( void* ecx, void* edx, IMatRenderConte
 						g_pModelRender->ForcedMaterialOverride( desync_material );
 						oDrawModelExecute( g_pModelRender, context, state, info, g::m_fake_matrix ); // 0
 
-/*						if (galaxy_vars.cfg.deysnc_Overid)
+						if (galaxy_vars.cfg.deysnc_Overid)
 						{
-							desync_layer->SetMaterialVarFlag( MATERIAL_VAR_IGNOREZ, false );
-							modulate( galaxy_vars.cfg.desync_chams_overide, desync_layer );
-							g_MdlRender->ForcedMaterialOverride( desync_layer );
-							oDrawModelExecute( g_MdlRender, context, state, info, g_AntiAim.m_fake_matrix ); // 0
-						}*/
+							desync_overide->SetMaterialVarFlag( MATERIAL_VAR_IGNOREZ, false );
+							modulate( galaxy_vars.cfg.desync_chams_overide, desync_overide );
+							g_pModelRender->ForcedMaterialOverride( desync_overide );
+							oDrawModelExecute( g_pModelRender, context, state, info, g::m_fake_matrix ); // 0
+						}
 
 					}
 					for (auto& i : g::m_fake_matrix)
@@ -221,14 +274,26 @@ void __fastcall c_hooks::DrawModelExecute( void* ecx, void* edx, IMatRenderConte
 
 	}
 
-	//other modelname
-//	if (isHand)
-//	{
-//		if (galaxy_vars.cfg.hand_chams)
-//		{
+	if (isHand)
+	{
+		if (galaxy_vars.cfg.hand_chams)
+		{
+			hand_normal->SetMaterialVarFlag( MATERIAL_VAR_WIREFRAME, false );			
+			modulate( galaxy_vars.cfg.hand_color, hand_normal );
+			g_pModelRender->ForcedMaterialOverride( hand_normal );
+			oDrawModelExecute( ecx, context, state, info, matrix );
 
-//		}
-//	}
+			if (galaxy_vars.cfg.hand_chams_overide)
+			{
+				hand_overide->SetMaterialVarFlag( MATERIAL_VAR_WIREFRAME, false );
+				modulate( galaxy_vars.cfg.hand_overide_color, hand_overide );
+				g_pModelRender->ForcedMaterialOverride( hand_overide );
+				oDrawModelExecute( ecx, context, state, info, matrix );
+			}
+		}
+	}
+
+
 
 
 	
