@@ -96,15 +96,6 @@
     <ClCompile Include="galaxy\valve_utils\NetvarManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="galaxy\gui\imgui\dx9\imgui_impl_dx9.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="galaxy\gui\imgui\imgui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="galaxy\gui\imgui\imgui_draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="galaxy\core\Visuals\other_esp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -124,6 +115,33 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="galaxy\core\Aimbot\lag_compensation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\gui\imgui\clip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\gui\imgui\clip_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\gui\imgui\imgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\gui\imgui\imgui_demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\gui\imgui\imgui_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\gui\imgui\imgui_freetype.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\gui\imgui\imgui_impl_dx9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\gui\imgui\imgui_impl_win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="galaxy\gui\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -290,30 +308,6 @@
     <ClInclude Include="galaxy\valve_utils\XorStr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="galaxy\gui\imgui\dx9\imgui_impl_dx9.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="galaxy\gui\imgui\font.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="galaxy\gui\imgui\imconfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="galaxy\gui\imgui\imgui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="galaxy\gui\imgui\imgui_internal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="galaxy\gui\imgui\stb_rect_pack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="galaxy\gui\imgui\stb_textedit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="galaxy\gui\imgui\stb_truetype.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="galaxy\core\Visuals\other_esp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -336,6 +330,48 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="galaxy\core\Aimbot\lag_compensation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\clip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\clip_lock_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\imconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\imgui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\imgui_freetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\imgui_impl_dx9.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\imgui_impl_win32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\imgui_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\imstb_rectpack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\imstb_textedit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\imgui\imstb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\bgtexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\bindsfont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\gui\std.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

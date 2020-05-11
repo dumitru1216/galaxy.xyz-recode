@@ -11,10 +11,13 @@
 #include "valve_sdk\IMaterial.h"
 #include "valve_sdk\IVRenderView.h"
 #include <assert.h>
+#include <d3d9.h>
 #include <d3dx9.h>
 #include "gui\imgui\imgui.h"
 #include "gui\imgui\imgui_internal.h"
-#include "gui\imgui\dx9\imgui_impl_dx9.h"
+#include "gui\imgui\imgui_impl_dx9.h"
+
+
 
 namespace vtable_indexes
 {
