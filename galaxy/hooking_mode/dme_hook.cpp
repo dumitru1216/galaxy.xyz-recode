@@ -274,7 +274,7 @@ void __fastcall c_hooks::DrawModelExecute( void* ecx, void* edx, IMatRenderConte
 
 	}
 
-	if (isHand)
+	if (isHand(ModelName))
 	{
 		if (galaxy_vars.cfg.hand_chams)
 		{

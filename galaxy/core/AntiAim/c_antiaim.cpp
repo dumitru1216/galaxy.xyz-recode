@@ -327,11 +327,13 @@ void slowwalk( )
 
 void c_antiaim::create_move( )
 {
-	if (!g_pEngine->IsInGame( ) || !galaxy_vars.cfg.Antiaim) return; //|| galaxy_vars.cfg.LegitBacktrack
+	if (!g_pEngine->IsInGame( ) || !galaxy_vars.cfg.Antiaim) return;
 	if (!g::pLocalEntity->IsAlive( )) return;
 	if (!g::pLocalEntity->GetActiveWeapon( ) || g::pLocalEntity->IsKnifeorNade( )) return;
 	float flServerTime = g::pLocalEntity->GetTickBase( ) * g_pGlobalVars->intervalPerTick;
 	bool canShoot = (g::pLocalEntity->GetActiveWeapon( )->GetNextPrimaryAttack( ) <= flServerTime);
+	if (g::pCmd->buttons & IN_USE) return;
+
 	if (canShoot && (g::pCmd->buttons & IN_ATTACK)) return;
 
 	//automatically pitch down

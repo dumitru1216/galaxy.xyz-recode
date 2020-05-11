@@ -47,14 +47,19 @@ public:
 		int yaw_desync;
 		int desync_swap;
 		int body_lean;
+		int pos_x;
+		int pos_y;
+		bool specator_list;
 
+		bool flags;
+		bool top_bar_enable;
 		bool local_trails; 
 
 		int body_invert;
 
 		int air_key;
 		bool air_stuck;
-
+		bool no_smoke;
 		bool air_desync;
 
 		// - hitbox - //

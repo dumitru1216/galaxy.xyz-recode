@@ -410,8 +410,13 @@ public:
 		}
 	}
 
+	uintptr_t observer_target( )
+	{
+		static int m_hObserverTarget = g_pNetvars->GetOffset( "DT_BasePlayer", "m_hObserverTarget" );
+		return GetValue<uintptr_t>( m_hObserverTarget );
+	}
 
-	std::array< float, 24 >& m_flPoseParameter( )
+	std::array< float, 24 >& m_flPoseParameter( ) //24
 	{
 		static int _m_flPoseParameter = g_pNetvars->GetOffset( "DT_BaseAnimating", "m_flPoseParameter" );
 		return *reinterpret_cast<std::array<float, 24>*>(reinterpret_cast<uintptr_t>(this) + _m_flPoseParameter);
@@ -503,7 +508,11 @@ public:
         const auto weaponData      = GetValue<CBaseHandle>(m_hActiveWeapon);
         return reinterpret_cast<C_BaseCombatWeapon*>(g_pEntityList->GetClientEntityFromHandle(weaponData));
     }
-
+	int Money( )
+	{
+		static int m_ArmorValue = g_pNetvars->GetOffset( "DT_CSPlayer", "m_iAccount" );
+		return GetValue<int>( m_ArmorValue );
+	}
     int GetTeam()
     {
         static int m_iTeamNum = g_pNetvars->GetOffset("DT_BaseEntity", "m_iTeamNum");

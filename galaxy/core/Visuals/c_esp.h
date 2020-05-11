@@ -25,6 +25,7 @@ private:
 
 	void BoundBox(C_BaseEntity* pEnt);
     void RenderBox();
+	void RenderFlags( C_BaseEntity* pEnt );
 	void RenderAmmo( C_BaseEntity* pEnt );
 	void RenderWeaponName(C_BaseEntity* pEnt);
     void RenderName(C_BaseEntity* pEnt, int iterator);

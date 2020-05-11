@@ -41,24 +41,35 @@ std::string clean_name( std::string name ) {
 	return wep;
 }
 
+float resolve_distance( Vector src, Vector dest )
+{
+	Vector delta = src - dest;
+	float fl_dist = ::sqrtf( (delta.Length( )) );
+	if (fl_dist < 1.0f) return 1.0f;
+	return fl_dist;
+}
+
 void c_esp::RenderWeaponName(C_BaseEntity* pEnt)
 {
     auto weapon = pEnt->GetActiveWeapon();
     if (!weapon) return;
      
 	std::string wep_str = weapon->GetName( );
-
+	Vector vecOrigin = pEnt->GetOrigin( ), vecOriginLocal = g::pLocalEntity->GetOrigin( );
 	std::transform( wep_str.begin( ), wep_str.end( ), wep_str.begin( ), ::toupper );
 
 	char ammo[519];
+	char dist_to[32];
 	sprintf_s( ammo, " - [ %d  /  %d ]", weapon->GetAmmo( ), weapon->m_iPrimaryReserveAmmoCount( ) );
-
+	sprintf_s( dist_to, "%.0f ft", resolve_distance( vecOriginLocal, vecOrigin ) );
 	std::string strWeaponName = std::string( weapon->GetCSWpnData( )->weapon_name ); //weapon->GetName();
 
     strWeaponName.erase(0, 7);
 
 	if (galaxy_vars.cfg.weapon_name)
-		g_pSurface->DrawT( Box.left + (Box.right / 2), Box.top + Box.bottom + 7, Color( 255, 255, 255, 240 ), font, true, (clean_name( wep_str ) + (galaxy_vars.cfg.weapon_name ? ammo : "")).c_str( ) );
+		g_pSurface->DrawT( Box.left + (Box.right / 2), Box.top + Box.bottom + 7, Color( 255, 255, 255, 240 ), font, true, dist_to );
+		g_pSurface->DrawT( Box.left + (Box.right / 2), Box.top + Box.bottom + 15, Color( 255, 255, 255, 240 ), font, true, strWeaponName.c_str( ));
+
 }
 
 void c_esp::RenderAmmo( C_BaseEntity* pEnt )
@@ -75,6 +86,10 @@ void c_esp::RenderAmmo( C_BaseEntity* pEnt )
 	g_pSurface->FilledRect( Box.left + 2, Box.top + Box.bottom + 3, Box.right - 5, 2, Color( 20, 20, 20, 240 ) );
 	g_pSurface->OutlinedRect( Box.left + 1, Box.top + Box.bottom + 2, Box.right - 3, 4, Color( 35, 35, 35, 240 ) );
 	g_pSurface->FilledRect( Box.left + 2, Box.top + Box.bottom + 3, shit - 5, 2, Color( ammo_color[0] * 255, ammo_color[1] * 255, ammo_color[2] * 255, 240 ) );
+	std::string ammo = "" + std::to_string( pEnt->GetActiveWeapon()->GetAmmo( ) );
+	g_pSurface->DrawT( Box.left + (Box.right + 5), Box.top + Box.bottom - 1, Color( 255, 255, 255, 240 ), font, true, ammo.c_str( ) );
+
+
 }
  //+ Box.right
 void c_esp::RenderHealth( C_BaseEntity* pEnt )
@@ -86,8 +101,6 @@ void c_esp::RenderHealth( C_BaseEntity* pEnt )
 		g_pSurface->DrawT( Box.left - 20, Box.top + (offsetY * 5), Color( 255, 255, 255, 255 ), font, false, Health.c_str( ) );
 		offsetY += 1;
 
-
-
 		g_pSurface->FilledRect( Box.left - 6, Box.top - 1, 4, Box.bottom + 2, Color( 0, 0, 0, 240 ) );
 		int pixelValue = pEnt->GetHealth( ) * Box.bottom / 100;
 		g_pSurface->FilledRect( Box.left - 5, Box.top + Box.bottom - pixelValue, 2, pixelValue, Color( 0, 255, 0, 250 ) );
@@ -96,68 +109,37 @@ void c_esp::RenderHealth( C_BaseEntity* pEnt )
 	}
 }
 
-void c_esp::RenderSkeleton(C_BaseEntity* pEnt) // the best
+void c_esp::RenderFlags( C_BaseEntity* pEnt )
 {
-	if (g_LagComp.PlayerRecord[pEnt->EntIndex()].size() == 0)
-		return;
-	int size = 0;
+	int x = Box.right + Box.top + 2, y = Box.bottom - 1;
 
-	if (galaxy_vars.cfg.Skeleton[0])
-		size++;
-	if (galaxy_vars.cfg.Skeleton[1])
-		size++;
-
-	for (int mode = 0; mode < size; mode++)
+	auto drawFlag = [&]( const char* str, Color color, ... ) -> void
 	{
-		Vector Hitbox[19];
-		Vector2D Hitboxw2s[19];
+		g_pSurface->DrawT( Box.right + Box.top + 2, Box.bottom - 1, color, g::CourierNew, false, str );
+		y += 10;
+	};
 
-		int Record = 0;
+	Color colorwhiteflag;
+	Color moneyflag;
+	Color zoomFlag;
 
-		if (mode == 0 && galaxy_vars.cfg.Skeleton[0])
-		{
-			Record = g_LagComp.PlayerRecord[pEnt->EntIndex()].size() - 1;
-
-			if (g_LagComp.ShotTick[pEnt->EntIndex()] != -1)
-				Record = g_LagComp.ShotTick[pEnt->EntIndex()];
-		}
-
-		for (int hitbox = 0; hitbox < 19; hitbox++)
-		{
-			Hitbox[hitbox] = pEnt->GetHitboxPosition(hitbox, g_LagComp.PlayerRecord[pEnt->EntIndex()].at(Record).Matrix);
-			Utils::WorldToScreen(Hitbox[hitbox], Hitboxw2s[hitbox]);
-		}
-
-		//spine
-		g_pSurface->Line(Hitboxw2s[HITBOX_HEAD].x, Hitboxw2s[HITBOX_HEAD].y, Hitboxw2s[HITBOX_NECK].x, Hitboxw2s[HITBOX_NECK].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_NECK].x, Hitboxw2s[HITBOX_NECK].y, Hitboxw2s[HITBOX_UPPER_CHEST].x, Hitboxw2s[HITBOX_UPPER_CHEST].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_UPPER_CHEST].x, Hitboxw2s[HITBOX_UPPER_CHEST].y, Hitboxw2s[HITBOX_LOWER_CHEST].x, Hitboxw2s[HITBOX_LOWER_CHEST].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_LOWER_CHEST].x, Hitboxw2s[HITBOX_LOWER_CHEST].y, Hitboxw2s[HITBOX_THORAX].x, Hitboxw2s[HITBOX_THORAX].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_THORAX].x, Hitboxw2s[HITBOX_THORAX].y, Hitboxw2s[HITBOX_BELLY].x, Hitboxw2s[HITBOX_BELLY].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_BELLY].x, Hitboxw2s[HITBOX_BELLY].y, Hitboxw2s[HITBOX_PELVIS].x, Hitboxw2s[HITBOX_PELVIS].y, skelecolor);
-
-		//right leg
-		g_pSurface->Line(Hitboxw2s[HITBOX_PELVIS].x, Hitboxw2s[HITBOX_PELVIS].y, Hitboxw2s[HITBOX_RIGHT_THIGH].x, Hitboxw2s[HITBOX_RIGHT_THIGH].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_RIGHT_THIGH].x, Hitboxw2s[HITBOX_RIGHT_THIGH].y, Hitboxw2s[HITBOX_RIGHT_CALF].x, Hitboxw2s[HITBOX_RIGHT_CALF].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_RIGHT_CALF].x, Hitboxw2s[HITBOX_RIGHT_CALF].y, Hitboxw2s[HITBOX_RIGHT_FOOT].x, Hitboxw2s[HITBOX_RIGHT_FOOT].y, skelecolor);
-
-		//right arm
-		g_pSurface->Line(Hitboxw2s[HITBOX_NECK].x, Hitboxw2s[HITBOX_NECK].y, Hitboxw2s[HITBOX_RIGHT_UPPER_ARM].x, Hitboxw2s[HITBOX_RIGHT_UPPER_ARM].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_RIGHT_UPPER_ARM].x, Hitboxw2s[HITBOX_RIGHT_UPPER_ARM].y, Hitboxw2s[HITBOX_RIGHT_FOREARM].x, Hitboxw2s[HITBOX_RIGHT_FOREARM].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_RIGHT_FOREARM].x, Hitboxw2s[HITBOX_RIGHT_FOREARM].y, Hitboxw2s[HITBOX_RIGHT_HAND].x, Hitboxw2s[HITBOX_RIGHT_HAND].y, skelecolor);
-
-		//left leg
-		g_pSurface->Line(Hitboxw2s[HITBOX_PELVIS].x, Hitboxw2s[HITBOX_PELVIS].y, Hitboxw2s[HITBOX_LEFT_THIGH].x, Hitboxw2s[HITBOX_LEFT_THIGH].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_LEFT_THIGH].x, Hitboxw2s[HITBOX_LEFT_THIGH].y, Hitboxw2s[HITBOX_LEFT_CALF].x, Hitboxw2s[HITBOX_LEFT_CALF].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_LEFT_CALF].x, Hitboxw2s[HITBOX_LEFT_CALF].y, Hitboxw2s[HITBOX_LEFT_FOOT].x, Hitboxw2s[HITBOX_LEFT_FOOT].y, skelecolor);
-
-		//left arm
-		g_pSurface->Line(Hitboxw2s[HITBOX_NECK].x, Hitboxw2s[HITBOX_NECK].y, Hitboxw2s[HITBOX_LEFT_UPPER_ARM].x, Hitboxw2s[HITBOX_LEFT_UPPER_ARM].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_LEFT_UPPER_ARM].x, Hitboxw2s[HITBOX_LEFT_UPPER_ARM].y, Hitboxw2s[HITBOX_LEFT_FOREARM].x, Hitboxw2s[HITBOX_LEFT_FOREARM].y, skelecolor);
-		g_pSurface->Line(Hitboxw2s[HITBOX_LEFT_FOREARM].x, Hitboxw2s[HITBOX_LEFT_FOREARM].y, Hitboxw2s[HITBOX_LEFT_HAND].x, Hitboxw2s[HITBOX_LEFT_HAND].y, skelecolor);
-
-		
+	if (!pEnt->IsDormant( )) {
+		colorwhiteflag = Color( 255, 255, 255, 255 );
+		moneyflag = Color( 21, 255, 0, 255 );
+		zoomFlag = Color( 79, 111, 255, 255 );
 	}
+	else if (pEnt->IsDormant( )) {
+		colorwhiteflag = Color( 144, 144, 144, 60 );
+		moneyflag = Color( 144, 144, 144, 60 );
+		zoomFlag = Color( 144, 144, 144, 60 );
+	}
+
+	const char* moonla;
+	std::string moonla1 = "$" + std::to_string( pEnt->Money( ) );
+	moonla = moonla1.c_str( );
+
+	g_pSurface->DrawT( Box.left + Box.right + 5, Box.top + (offsetY * 11), moneyflag, g::CourierNew, false, moonla );
+
 }
 
 void c_esp::BoundBox(C_BaseEntity* pEnt)
@@ -205,11 +187,11 @@ void c_esp::Render()
 		if (Box.bottom == 0)
 			continue;
 
-		if (galaxy_vars.cfg.Skeleton[0] || galaxy_vars.cfg.Skeleton[1])
-			RenderSkeleton(pPlayerEntity);
-
         if (galaxy_vars.cfg.Box)
             RenderBox();
+
+		if (galaxy_vars.cfg.flags)
+			RenderFlags( pPlayerEntity );
 
         if (galaxy_vars.cfg.name)
             RenderName(pPlayerEntity, i);

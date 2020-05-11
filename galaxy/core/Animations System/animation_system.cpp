@@ -251,27 +251,40 @@ void animations_system::LocalAnimFix( C_BaseEntity* entity )
 	static std::array<float, 24> sent_pose_params = entity->m_flPoseParameter( );
 	static AnimationLayer backup_layers[15];
 
+
 	if (fresh_tick( ))
 	{
 		std::memcpy( backup_layers, entity->GetAnimOverlays( ), (sizeof( AnimationLayer ) * entity->NumOverlays( )) );
+
 		entity->ClientAnimations( ) = true;
 		entity->UpdateAnimationState( entity->GetPlayerAnimState( ), g::pCmd->viewangles );
 
-		if (entity->GetPlayerAnimState( ))
+		entity->GetPlayerAnimState()->m_bOnGround = g::pLocalEntity->GetFlags( ) & FL_ONGROUND;
+		if (entity->GetPlayerAnimState( )->m_iLastClientSideAnimationUpdateFramecount >= g_pGlobalVars->framecount) {
 			entity->GetPlayerAnimState( )->m_iLastClientSideAnimationUpdateFramecount = g_pGlobalVars->framecount - 1;
+		}
+
 
 		entity->UpdateClientAnimation( );
+
 		if (g::bSendPacket)
 		{
 			proper_abs = entity->GetPlayerAnimState( )->m_flGoalFeetYaw;
 			sent_pose_params = entity->m_flPoseParameter( );
+
 		}
+
+
+		entity->GetPlayerAnimState( )->m_flFeetYawRate = 0.f;
+		entity->GetPlayerAnimState( )->m_flUnknownFraction = 0.f; 
+		entity->GetPlayerAnimState()->m_flFeetCycle = backup_layers[6].m_flCycle;
 	}
+
+
 	entity->ClientAnimations( ) = false;
-	entity->SetAbsAngles( Vector( 0, proper_abs, 0 ) );
-	entity->GetPlayerAnimState( )->m_flUnknownFraction = 0.f; // Lol.
-	std::memcpy( entity->GetAnimOverlays( ), backup_layers, (sizeof( AnimationLayer ) * entity->NumOverlays( )) );
+	entity->GetPlayerAnimState( )->m_flFeetYawRate = 0.f;
 	entity->m_flPoseParameter( ) = sent_pose_params;
-
-
+	std::memcpy( entity->GetAnimOverlays( ), backup_layers, (sizeof( AnimationLayer ) * entity->NumOverlays( )) );
+	entity->SetAbsAngles( Vector( 0, proper_abs, 0.f ) );
+	entity->InvalidateBoneCache( );
 }

@@ -238,7 +238,7 @@ void visuals_tab( ) {
 		ImGui::Checkbox( "ammo bar", &galaxy_vars.cfg.ammo_bar );
 		ImGui::SameLine( );
 		ImGui::ColorEdit4( "###ammo_color", galaxy_vars.cfg.ammo_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
-
+		ImGui::Checkbox( "flags", &galaxy_vars.cfg.flags );
 
 
 	}
@@ -347,6 +347,8 @@ void visuals_tab( ) {
 		ImGui::Text( "sky color" );
 		ImGui::SameLine( );
 		ImGui::ColorEdit4( "###skycolor", galaxy_vars.cfg.sky_box_color, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs );
+		ImGui::Checkbox( "top bar", &galaxy_vars.cfg.top_bar_enable );
+		ImGui::Checkbox( "spectators list", &galaxy_vars.cfg.specator_list );
 
 	}
 	ImGui::EndChild( true );
@@ -361,6 +363,7 @@ void visuals_tab( ) {
 		ImGui::Checkbox( "remove scope", &galaxy_vars.cfg.NoScope );
 		ImGui::Checkbox( "remove visual recoil", &galaxy_vars.cfg.NoRecoil );
 		ImGui::Checkbox( "remove zoom", &galaxy_vars.cfg.NoZoom );
+		ImGui::Checkbox( "remove smoke", &galaxy_vars.cfg.no_smoke );
 		
 	}
 	ImGui::EndChild( true );
@@ -377,7 +380,7 @@ void misc_tab( ) {
 
 	ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, ImVec2( 16, 16 ) );
 
-	ImGui::BeginChild( "misc [ movement ]", ImVec2( 269, 361 ), true );
+	ImGui::BeginChild( "misc [ main ]", ImVec2( 269, 361 ), true );
 	{
 		ImGui::Checkbox( "automatic bhop", &galaxy_vars.cfg.Bhop );
 		ImGui::Checkbox( "automatic strafe", &galaxy_vars.cfg.AutoStrafe );
@@ -388,11 +391,15 @@ void misc_tab( ) {
 
 	ImGui::BeginChild( "misc [ other ]", ImVec2( 289, 152 ), true );
 	{
+		ImGui::Text( "menu color" );
+		ImGui::SameLine( );
+		ImGui::ColorEdit4( "###mmen0", galaxy_vars.cfg.menu_color, ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_NoInputs );
 		ImGui::Checkbox( "slowwalk", &galaxy_vars.cfg.slowwalk );
 		if (galaxy_vars.cfg.slowwalk)
 		{
 			ImGui::SliderInt( "slowwalk speed", &galaxy_vars.cfg.slowspeed, 0, 100, "%.f%%" );
 		}
+		ImGui::Checkbox( "server hitboxes", &galaxy_vars.cfg.server_hitobx );
 	}
 	ImGui::EndChild( true );
 

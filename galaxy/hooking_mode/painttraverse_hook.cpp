@@ -30,6 +30,8 @@ void __fastcall c_hooks::PaintTraverse( PVOID pPanels, int edx, unsigned int vgu
 	{
 		esp.Render( );
 		c_other_esp.watermak( );
+		c_other_esp.top_bar( );
+		c_other_esp.spec_list( );
 		g_Misc.Crosshair( );
 		
 

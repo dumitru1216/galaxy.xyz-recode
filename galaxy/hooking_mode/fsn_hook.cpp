@@ -2,6 +2,14 @@
 #include "../core/external_inclues.h"
 #include "../core/Animations System/animation_system.h"
 
+std::vector<const char*> vistasmoke_mats = //b1g nosmoke
+{
+"particle/vistasmokev1/vistasmokev1_smokegrenade",
+"particle/vistasmokev1/vistasmokev1_emods",
+"particle/vistasmokev1/vistasmokev1_emods_impactdust",
+};
+auto smoke_count = *(DWORD*)(Utils::FindSignature( "client_panorama", "55 8B EC 83 EC 08 8B 15 ? ? ? ? 0F 57 C0" ) + 0x8);
+
 C_BaseEntity* playerIndex( int index ) {
 	typedef C_BaseEntity* (__fastcall * PlayerByIndex)(int);
 	static PlayerByIndex UTIL_PlayerByIndex = reinterpret_cast<PlayerByIndex>(Utils::PatternScan( GetModuleHandleW( L"server.dll" ), "85 C9 7E 2A A1" ));
@@ -10,6 +18,19 @@ C_BaseEntity* playerIndex( int index ) {
 		return false;
 
 	return UTIL_PlayerByIndex( index );
+}
+
+void no_smoke( )
+{
+	if ( galaxy_vars.cfg.no_smoke )
+	{
+		for (auto matName : vistasmoke_mats)
+		{
+			*(int*)smoke_count = 0;
+			IMaterial* mat = g_pMaterialSys->FindMaterial( matName, "Other textures" );
+			mat->SetMaterialVarFlag( MATERIAL_VAR_NO_DRAW, true );
+		}
+	}
 }
 
 void server_hitbox( )
@@ -52,7 +73,7 @@ void __stdcall c_hooks::FrameStageNotify( ClientFrameStage_t curStage )
 		//hooking features
 		g_Misc.ThirdPerson( curStage );
 		g_Resolver.FrameStage( curStage );
-
+		no_smoke( );
 		//proper hooking nightmode
 		c_other_esp.night_mode( );
 

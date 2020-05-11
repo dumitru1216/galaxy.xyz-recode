@@ -11,6 +11,6 @@ public:
 	void Render( );
 	void apply_fonts( );
 	void run_popup( );
-
+	void KeyStates( );
 };
 extern c_menu menu;
