@@ -39,7 +39,7 @@ void c_menu::initialize( IDirect3DDevice9* pDevice ) {
 	style->Colors[ImGuiCol_ScrollbarBg] = ImVec4( 45 / 255.f, 45 / 255.f, 45 / 255.f, 1.f );
 	style->Colors[ImGuiCol_ScrollbarGrab] = ImVec4( 65 / 255.f, 65 / 255.f, 65 / 255.f, 1.f );
 
-	this->m_bIsOpened = true;
+	this->m_bIsOpened = false;
 
 	IDirect3DSwapChain9* pChain = nullptr;
 	D3DPRESENT_PARAMETERS pp = {};
@@ -99,6 +99,8 @@ void c_menu::draw( )
 	static auto child_pos_backwend = []( int num ) -> ImVec2 {
 		return ImVec2( ui::GetWindowPos( ).x + 20 + (ui::GetWindowSize( ).x / 2 - 70) * num + 20 * num, ui::GetWindowPos( ).y + 45 );
 	};
+
+	ui::GetIO( ).MouseDrawCursor = menuOpened;
 
 	ui::SetNextWindowSizeConstraints( ImVec2( 580, 645 ), ImVec2( 4096, 4096 ) );
 	ui::Begin( "0x8C2", 0, ImGuiWindowFlags_NoTitleBar || ImGuiWindowFlags_NoScrollbar );
