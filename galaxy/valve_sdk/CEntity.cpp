@@ -129,6 +129,28 @@ bool C_BaseEntity::IsKnifeorNade()
 	return false;
 }
 
+bool C_BaseEntity::IsKnife_fix( )
+{
+	if (!this)
+		return false;
+	if (!this->IsAlive( ))
+		return false;
+
+	C_BaseCombatWeapon *pWeapon = (C_BaseCombatWeapon*)this->GetActiveWeapon( );
+
+	if (!pWeapon)
+		return false;
+
+	std::string WeaponName = pWeapon->GetName( );
+
+	if (WeaponName == "weapon_knifealau")
+		return true;
+
+
+	return false;
+}
+
+
 float C_BaseEntity::FireRate()
 {
 	if (!this)

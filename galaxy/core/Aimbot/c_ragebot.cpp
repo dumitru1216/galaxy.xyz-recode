@@ -278,7 +278,7 @@ void c_aimbot::OnCreateMove( )
 		return;
 	}
 
-	if (!g::pLocalEntity->GetActiveWeapon( ) || g::pLocalEntity->IsKnifeorNade( ))
+	if (!g::pLocalEntity->GetActiveWeapon( ) || g::pLocalEntity->IsKnifeorNade( ) || g::pLocalEntity->IsKnife_fix( ))
 	{
 		shot = false;
 		return;
@@ -286,11 +286,8 @@ void c_aimbot::OnCreateMove( )
 
 	if (shot)
 	{
-		if (galaxy_vars.cfg.FixShotPitch) // ik it dosnt realy fix much just makes ur pitch go down faster
-		{
-			g::bSendPacket = true;
-			antiaim.create_move( );
-		}
+		g::bSendPacket = true;
+		antiaim.create_move( );
 		shot = false;
 	}
 

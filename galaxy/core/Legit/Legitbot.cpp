@@ -1,6 +1,6 @@
 #include "Legitbot.h"
 #include "..\Aimbot\c_ragebot.h"
-#include "..\Aimbot\LagComp.h"
+#include "..\Aimbot\lag_compensation.h"
 #include "..\..\valve_utils\Utils.h"
 #include "..\..\valve_sdk\IVEngineClient.h"
 #include "..\..\valve_sdk\PlayerInfo.h"

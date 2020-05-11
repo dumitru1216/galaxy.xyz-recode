@@ -138,7 +138,7 @@
     <ClCompile Include="galaxy\core\Aimbot\c_ragebot.cpp" />
     <ClCompile Include="galaxy\core\Aimbot\Autowall.cpp" />
     <ClCompile Include="galaxy\core\Aimbot\EnginePrediction.cpp" />
-    <ClCompile Include="galaxy\core\Aimbot\LagComp.cpp" />
+    <ClCompile Include="galaxy\core\Aimbot\lag_compensation.cpp" />
     <ClCompile Include="galaxy\core\AntiAim\c_antiaim.cpp" />
     <ClCompile Include="galaxy\core\Legit\Legitbot.cpp" />
     <ClCompile Include="galaxy\core\Resolver\Resolver.cpp" />
@@ -176,7 +176,7 @@
     <ClInclude Include="galaxy\core\Aimbot\c_ragebot.h" />
     <ClInclude Include="galaxy\core\Aimbot\Autowall.h" />
     <ClInclude Include="galaxy\core\Aimbot\EnginePrediction.h" />
-    <ClInclude Include="galaxy\core\Aimbot\LagComp.h" />
+    <ClInclude Include="galaxy\core\Aimbot\lag_compensation.h" />
     <ClInclude Include="galaxy\core\AntiAim\c_antiaim.h" />
     <ClInclude Include="galaxy\core\external_inclues.h" />
     <ClInclude Include="galaxy\core\Legit\Legitbot.h" />

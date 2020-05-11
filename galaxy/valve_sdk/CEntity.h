@@ -615,6 +615,7 @@ public:
     }
 
 	bool IsKnifeorNade();
+	bool IsKnife_fix( );
 
     bool IsAlive() { return this->GetHealth() > 0 && this->GetLifeState() == 0; }
 

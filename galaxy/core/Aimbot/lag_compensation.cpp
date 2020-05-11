@@ -1,4 +1,4 @@
-#include "LagComp.h"
+#include "lag_compensation.h"
 #include "c_ragebot.h"
 #include "..\..\valve_utils\Utils.h"
 #include "..\..\valve_sdk\IVEngineClient.h"

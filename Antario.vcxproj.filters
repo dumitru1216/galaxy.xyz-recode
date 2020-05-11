@@ -57,9 +57,6 @@
     <ClCompile Include="galaxy\core\Aimbot\EnginePrediction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="galaxy\core\Aimbot\LagComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="galaxy\core\Legit\Legitbot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -126,6 +123,9 @@
     <ClCompile Include="galaxy\core\Premium\premium_stuff.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="galaxy\core\Aimbot\lag_compensation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="galaxy\hooking_mode\hooking_init.h">
@@ -138,9 +138,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="galaxy\core\Aimbot\EnginePrediction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="galaxy\core\Aimbot\LagComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="galaxy\core\Legit\Legitbot.h">
@@ -336,6 +333,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="galaxy\core\Premium\premium_stuff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="galaxy\core\Aimbot\lag_compensation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

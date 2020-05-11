@@ -7,7 +7,7 @@
 #include "..\..\gui\menu_system.h"
 #include <array>
 #include "../../valve_sdk/ICvar.h"
-#include "../Aimbot/LagComp.h"
+#include "../Aimbot/lag_compensation.h"
 
 c_antiaim antiaim;
 
