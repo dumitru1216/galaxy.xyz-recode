@@ -24,6 +24,7 @@ public:
 		int HitchanceValue;
 		int Mindmg;
 		bool Resolver;
+		int baim_key;
 		int BodyScale;
 		int HeadScale;
 		bool MultiPoint;
@@ -36,7 +37,7 @@ public:
 		bool BaimLethal;
 		bool BaimPitch;
 		bool BaimInAir;
-
+		int force_head_key;
 		bool server_hitobx;
 
 		//slowwalk

@@ -127,6 +127,10 @@ void c_menu::draw( )
 		{
 			ui::SliderInt( "hitchance", &galaxy_vars.cfg.HitchanceValue, 0, 100, "%.f%%" );
 			ui::SliderInt( "minimum damage", &galaxy_vars.cfg.Mindmg, 0, 100, "%.f%%" );
+			ui::Text( "body-aim key" );
+			ui::Keybind( "bodyaim key", &galaxy_vars.cfg.baim_key );
+			ui::Text( "force head key" );
+			ui::Keybind( "force head key", &galaxy_vars.cfg.force_head_key );
 		}
 		ui::EndChild( );
 		ui::SetCursorPos( ImVec2( 295, 45 ) );

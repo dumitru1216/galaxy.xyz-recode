@@ -26,24 +26,6 @@ void c_aimbot::Autostop( )
 
 bool c_aimbot::HitChance( C_BaseEntity* pEnt, C_BaseCombatWeapon* pWeapon, Vector Angle, Vector Point, int chance )
 {
-	//do that for lua
-/*	if (chance == 0 || galaxy_vars.cfg.Hitchance == 0)
-		return true;
-
-	if (Backtrack[pEnt->EntIndex( )] || ShotBacktrack[pEnt->EntIndex( )]) // doing this bec im lazy
-	{
-		float Velocity = g::pLocalEntity->GetVelocity( ).Length( );
-
-		if (Velocity <= (g::pLocalEntity->GetActiveWeapon( )->GetCSWpnData( )->max_speed_alt * .34f))
-			Velocity = 0.0f;
-
-		float SpreadCone = pWeapon->GetAccuracyPenalty( ) * 256.0f / M_PI + pWeapon->GetCSWpnData( )->max_speed * Velocity / 3000.0f; // kmeth https://github.com/DankPaster/kmethdude
-		float a = (Point - g::pLocalEntity->GetEyePosition( )).Length( );
-		float b = sqrt( tan( SpreadCone * M_PI / 180.0f ) * a );
-		if (2.2f > b) return true;
-		return (chance <= ((2.2f / fmax( b, 2.2f )) * 100.0f));
-	}*/
-
 	float Seeds = (galaxy_vars.cfg.Hitchance == 1) ? 356.f : 256.f;
 
 	Angle -= (g::pLocalEntity->GetAimPunchAngle( ) * g_pCvar->FindVar( "weapon_recoil_scale" )->GetFloat( ));
@@ -150,6 +132,18 @@ Vector c_aimbot::Hitscan( C_BaseEntity* pEnt ) // supremeemmemememememe
 				Scan.push_back( (int)HitboxList::RightShin );
 			}
 				
+			if (GetAsyncKeyState( galaxy_vars.cfg.baim_key ))
+			{
+				Scan.push_back( (int)HitboxList::Pelvis );
+				Scan.push_back( (int)HitboxList::Stomach );
+				Scan.push_back( (int)HitboxList::Chest );
+				Scan.push_back( (int)HitboxList::UpperChest );
+			}
+
+			if (GetAsyncKeyState( galaxy_vars.cfg.force_head_key ))
+			{
+				Scan.push_back( (int)HitboxList::Head );
+			}
 		}
 
 		HeadHeight = galaxy_vars.cfg.HeadScale;

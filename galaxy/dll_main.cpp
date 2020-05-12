@@ -3,7 +3,7 @@
 #include "valve_utils\Utils.h"
 #include "valve_utils\GlobalVars.h"
 #include "gui/config_system.h"
-
+#include "core/Discord Presence/discord.h"
 
 HINSTANCE HThisModule;
 
@@ -19,13 +19,13 @@ DWORD WINAPI attach( void* instance ) {
 	}
 
 	catch (const std::runtime_error & err) {
-		MessageBoxA( NULL, err.what( ), "saturn.zone error!", MB_OK | MB_ICONERROR );
-		
+
 		FreeLibraryAndExitThread( static_cast<HMODULE>(instance), 0 );
 	}
 
 	galaxy_vars.run( "galaxy.xyz" );
-
+	discord.start( );
+	discord.update( );
 
 
 	while (!GetAsyncKeyState( VK_HOME ))
